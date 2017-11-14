@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
-* Студент: [Ольга Коваль](https://up.htmlacademy.ru/javascript/11/user/114667).
-* Наставник: `Неизвестно`.
+* Студент: [Ольга Коваль](https://htmlacademy.ru/profile/zateya).
+* Наставник: [Максим Шарипов](https://htmlacademy.ru/profile/id58709).
 
 ---
 
