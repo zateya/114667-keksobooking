@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Коваль](https://htmlacademy.ru/profile/zateya).
-* Наставник: [Максим Шарипов](https://htmlacademy.ru/profile/id58709).
+* Наставник: [Евгений Лепёшкин](https://htmlacademy.ru/profile/id586181).
 
 ---
 
