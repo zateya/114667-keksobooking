@@ -45,11 +45,6 @@ var getRandomArrayElement = function (arr) {
   return randomElement;
 };
 
-var removeClass = function (selector, className) {
-  var element = document.querySelector(selector);
-  return element.classList.remove(className);
-};
-
 var getAvatar = function (fileMask, filePrefix, fileExtenshion) {
   userID++;
   return fileMask + filePrefix + userID + fileExtenshion;
@@ -216,6 +211,6 @@ var showAdvert = function (adverts, number) {
 };
 
 var offers = getOffers(USERS_COUNT);
-removeClass('.map', 'map--faded');
+map.classList.remove('map--faded');
 createPins(offers);
 showAdvert(offers, 0);
