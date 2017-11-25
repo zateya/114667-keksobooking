@@ -33,6 +33,8 @@ var LOCATION_Y_MAX = 500;
 var MAP_PIN_WIDTH = 46;
 var MAP_PIN_HEIGHT = 68;
 
+var CURRENCY = '\u20BD';
+
 var userID = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
 
@@ -186,7 +188,7 @@ var createAdvert = function (offerData) {
   var offerType = '';
   advert.querySelector('h3').textContent = offerData.offer.title;
   advert.querySelector('small').textContent = offerData.offer.address;
-  advert.querySelector('.popup__price').innerHTML = offerData.offer.price + ' &#x20bd;/ночь';
+  advert.querySelector('.popup__price').textContent = offerData.offer.price + ' ' + CURRENCY + '/ночь';
   if (offerData.offer.type === 'flat') {
     offerType = 'Квартира';
   } else if (offerData.offer.type === 'bungalo') {
