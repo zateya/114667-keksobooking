@@ -59,7 +59,6 @@ var getOfferTitle = function (titles) {
   var offerIndex = getRandomInteger(0, titles.length - 1);
   var offerTitle = offersTitles[offerIndex];
   offersTitles.splice(offerIndex, 1);
-
   return offerTitle;
 };
 
