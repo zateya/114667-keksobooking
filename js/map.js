@@ -33,7 +33,7 @@ var LOCATION_Y_MAX = 500;
 var MAP_PIN_WIDTH = 46;
 var MAP_PIN_HEIGHT = 68;
 
-var CURRENCY = '\u20BD';
+var RUB_CURRENCY = '\u20BD';
 
 var userID = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
@@ -154,12 +154,11 @@ var getOffers = function (usersCount) {
 
 var map = document.querySelector('.map');
 var mapPins = map.querySelector('.map__pins');
-var mapPin = map.querySelector('.map__pin');
+var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
 var mapCard = document.querySelector('template').content.querySelector('.map__card');
 
 var createPin = function (offerData) {
   var newPin = mapPin.cloneNode(true);
-  newPin.classList.remove('map__pin--main');
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
   var top = offerData.location.y - MAP_PIN_HEIGHT;
   newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
@@ -188,7 +187,7 @@ var createAdvert = function (offerData) {
   var offerType = '';
   advert.querySelector('h3').textContent = offerData.offer.title;
   advert.querySelector('small').textContent = offerData.offer.address;
-  advert.querySelector('.popup__price').textContent = offerData.offer.price + ' ' + CURRENCY + '/ночь';
+  advert.querySelector('.popup__price').textContent = offerData.offer.price + ' ' + RUB_CURRENCY + '/ночь';
   if (offerData.offer.type === 'flat') {
     offerType = 'Квартира';
   } else if (offerData.offer.type === 'bungalo') {
