@@ -59,34 +59,9 @@ var getOfferTitle = function (titles) {
   return offerTitle;
 };
 
-var getPrice = function (minPrice, maxPrice) {
-  var price = getRandomInteger(minPrice, maxPrice);
-  return price;
-};
-
-var getPropertyType = function (types) {
-  var propertyType = getRandomArrayElement(types);
-  return propertyType;
-};
-
-var getRooms = function (min, max) {
-  var rooms = getRandomInteger(min, max);
-  return rooms;
-};
-
 var getGuests = function (rooms) {
   var guests = getRandomInteger(1, rooms);
   return guests;
-};
-
-var getCheckin = function (times) {
-  var checkin = getRandomArrayElement(times);
-  return checkin;
-};
-
-var getCheckout = function (times) {
-  var checkout = getRandomArrayElement(times);
-  return checkout;
 };
 
 var getFeatures = function (features) {
@@ -98,42 +73,27 @@ var getFeatures = function (features) {
   return offerFeatures;
 };
 
-var getLocationX = function (xMin, xMax) {
-  return getRandomInteger(xMin, xMax);
-};
-
-var getLocationY = function (yMin, yMax) {
-  return getRandomInteger(yMin, yMax);
-};
-
 var getOfferData = function () {
-  var userAvatar = getAvatar(AVATAR_FILE_MASK, AVATAR_ID_PREFIX, AVATAR_FILE_EXTENSION);
-  var offerTitle = getOfferTitle(offersTitles);
-  var locationX = getLocationX(LOCATION_X_MIN, LOCATION_X_MAX);
-  var locationY = getLocationY(LOCATION_Y_MIN, LOCATION_Y_MAX);
+  var locationX = getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
+  var locationY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
   var propertyAddress = locationX + ', ' + locationY;
-  var offerPrice = getPrice(PRICE_MIN, PRICE_MAX);
-  var propertyType = getPropertyType(PROPERTY_TYPES);
-  var roomsCount = getRooms(ROOMS_MIN, ROOMS_MAX);
+  var roomsCount = getRandomInteger(ROOMS_MIN, ROOMS_MAX);
   var guestsCount = getGuests(roomsCount);
-  var checkinTime = getCheckin(TIME);
-  var checkoutTime = getCheckout(TIME);
-  var propertyFeatures = getFeatures(FEATURES_LIST);
 
   return {
     'author': {
-      'avatar': userAvatar
+      'avatar': getAvatar(AVATAR_FILE_MASK, AVATAR_ID_PREFIX, AVATAR_FILE_EXTENSION)
     },
     'offer': {
-      'title': offerTitle,
+      'title': getOfferTitle(offersTitles),
       'address': propertyAddress,
-      'price': offerPrice,
-      'type': propertyType,
+      'price': getRandomInteger(PRICE_MIN, PRICE_MAX),
+      'type': getRandomArrayElement(PROPERTY_TYPES),
       'rooms': roomsCount,
       'guests': guestsCount,
-      'checkin': checkinTime,
-      'checkout': checkoutTime,
-      'features': propertyFeatures,
+      'checkin': getRandomArrayElement(TIME),
+      'checkout': getRandomArrayElement(TIME),
+      'features': getFeatures(FEATURES_LIST),
       'description': 'Очень.',
       'photos': []
     },
