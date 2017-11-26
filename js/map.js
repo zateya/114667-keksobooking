@@ -47,21 +47,11 @@ var getRandomArrayElement = function (arr) {
   return randomElement;
 };
 
-var getAvatar = function (fileMask, filePrefix, fileExtenshion) {
-  userID++;
-  return fileMask + filePrefix + userID + fileExtenshion;
-};
-
 var getOfferTitle = function (titles) {
   var offerIndex = getRandomInteger(0, titles.length - 1);
   var offerTitle = offersTitles[offerIndex];
   offersTitles.splice(offerIndex, 1);
   return offerTitle;
-};
-
-var getGuests = function (rooms) {
-  var guests = getRandomInteger(1, rooms);
-  return guests;
 };
 
 var getFeatures = function (features) {
@@ -78,11 +68,12 @@ var getOfferData = function () {
   var locationY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
   var propertyAddress = locationX + ', ' + locationY;
   var roomsCount = getRandomInteger(ROOMS_MIN, ROOMS_MAX);
-  var guestsCount = getGuests(roomsCount);
+  var guestsCount = getRandomInteger(1, roomsCount);
+  userID++;
 
   return {
     'author': {
-      'avatar': getAvatar(AVATAR_FILE_MASK, AVATAR_ID_PREFIX, AVATAR_FILE_EXTENSION)
+      'avatar': AVATAR_FILE_MASK + AVATAR_ID_PREFIX + userID + AVATAR_FILE_EXTENSION
     },
     'offer': {
       'title': getOfferTitle(offersTitles),
