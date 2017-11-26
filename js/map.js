@@ -31,7 +31,7 @@ var LOCATION_Y_MIN = 100;
 var LOCATION_Y_MAX = 500;
 
 var MAP_PIN_WIDTH = 46;
-var MAP_PIN_HEIGHT = 68;
+var MAP_PIN_HEIGHT = 61;
 
 var RUB_CURRENCY = '\u20BD';
 
