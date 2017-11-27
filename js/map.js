@@ -19,6 +19,17 @@ var OFFERS_TITLES = [
 var PRICE_MIN = 1000;
 var PRICE_MAX = 1000000;
 var PROPERTY_TYPES = ['flat', 'house', 'bungalo'];
+var TYPES = {
+  flat: {
+    ru: 'Квартира'
+  },
+  bungalo: {
+    ru: 'Бунгало'
+  },
+  house: {
+    ru: 'Дом'
+  }
+};
 var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
 var TIME = ['12:00', '13:00', '14:00'];
@@ -135,17 +146,6 @@ var getFeaturesList = function (features) {
 
 var createAdvert = function (offerData) {
   var advert = mapCard.cloneNode(true);
-  var TYPES = {
-    flat: {
-      ru: 'Квартира'
-    },
-    bungalo: {
-      ru: 'Бунгало'
-    },
-    house: {
-      ru: 'Дом'
-    }
-  };
   advert.querySelector('h3').textContent = offerData.offer.title;
   advert.querySelector('small').textContent = offerData.offer.address;
   advert.querySelector('.popup__price').textContent = offerData.offer.price + ' ' + RUB_CURRENCY + '/ночь';
