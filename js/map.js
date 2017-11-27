@@ -85,7 +85,7 @@ var getOfferData = function () {
       'checkin': getRandomArrayElement(TIME),
       'checkout': getRandomArrayElement(TIME),
       'features': getFeatures(FEATURES_LIST),
-      'description': 'Очень.',
+      'description': '',
       'photos': []
     },
     'location': {
@@ -135,20 +135,21 @@ var getFeaturesList = function (features) {
 
 var createAdvert = function (offerData) {
   var advert = mapCard.cloneNode(true);
-  var offerType = '';
+  var TYPES = {
+    flat: {
+      ru: 'Квартира'
+    },
+    bungalo: {
+      ru: 'Бунгало'
+    },
+    house: {
+      ru: 'Дом'
+    }
+  };
   advert.querySelector('h3').textContent = offerData.offer.title;
   advert.querySelector('small').textContent = offerData.offer.address;
   advert.querySelector('.popup__price').textContent = offerData.offer.price + ' ' + RUB_CURRENCY + '/ночь';
-  if (offerData.offer.type === 'flat') {
-    offerType = 'Квартира';
-  } else if (offerData.offer.type === 'bungalo') {
-    offerType = 'Бунгало';
-  } else if (offerData.offer.type === 'house') {
-    offerType = 'Дом';
-  } else {
-    offerType = offerData.offer.type;
-  }
-  advert.querySelector('h4').textContent = offerType;
+  advert.querySelector('h4').textContent = TYPES[offerData.offer.type].ru;
   advert.querySelector('h4 + p').textContent = offerData.offer.rooms + ' комнаты для ' + offerData.offer.guests + ' гостей';
   advert.querySelector('h4 + p + p').textContent = 'Заезд после ' + offerData.offer.checkin + ', выезд до ' + offerData.offer.checkout;
   advert.querySelector('.popup__features').innerHTML = getFeaturesList(offerData.offer.features);
