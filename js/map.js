@@ -75,12 +75,14 @@ var toggleNoticeFormDisabled = function (isFormDisabled) {
   }
 };
 
-// при отпускании кнопки мыши на маркере (пользовательская метка) активируем сервис и создаем другие метки
+// при отпускании кнопки мыши на маркере (пользовательская метка) активируем сервис и создаются другие метки
 var onUserPinMouseup = function () {
   toggleServiceDisabled(false);
   createPins(offers);
   userPin.removeEventListener('mouseup', onUserPinMouseup);
 };
+
+// функции для работы с массивами
 
 var getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -91,6 +93,7 @@ var getRandomArrayElement = function (arr) {
   return randomElement;
 };
 
+// получение заголовка предложения
 var getOfferTitle = function (titles) {
   var offerIndex = getRandomInteger(0, titles.length - 1);
   var offerTitle = offersTitles[offerIndex];
@@ -98,6 +101,7 @@ var getOfferTitle = function (titles) {
   return offerTitle;
 };
 
+// получение массива с особенностями предложения
 var getFeatures = function (features) {
   var offerFeatures = [];
   var featuresCount = getRandomInteger(1, features.length);
@@ -107,6 +111,7 @@ var getFeatures = function (features) {
   return offerFeatures;
 };
 
+// формирование объекта с данными по предложению
 var getOfferData = function () {
   var locationX = getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
   var locationY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
@@ -139,6 +144,7 @@ var getOfferData = function () {
   };
 };
 
+// формирование массива объектов недвижимости
 var getOffers = function (usersCount) {
   var offers = [];
   for (var i = 0; i < usersCount; i++) {
@@ -147,7 +153,8 @@ var getOffers = function (usersCount) {
   return offers;
 };
 
-// создаем метки
+// создает метки на карте
+
 var createPin = function (offerData, offerNumber) {
   var newPin = mapPin.cloneNode(true);
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
@@ -166,6 +173,7 @@ var createPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
+// формирует список особенностей для вывода в объевление
 var getFeaturesList = function (features) {
   var featuresList = '';
   for (var i = 0; i < features.length; i++) {
@@ -174,6 +182,7 @@ var getFeaturesList = function (features) {
   return featuresList;
 };
 
+// формирует текст объявления
 var createAdvert = function (offerData) {
   var advert = mapCard.cloneNode(true);
   advert.querySelector('h3').textContent = offerData.offer.title;
@@ -188,7 +197,7 @@ var createAdvert = function (offerData) {
   return advert;
 };
 
-// показывает объявление, если уже есть попап, то сначала удаляем, а затем создаем новый
+// показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
 var showAdvert = function (advert) {
   var popup = map.querySelector('.popup');
   if (popup) {
@@ -223,10 +232,13 @@ var removePinActiveState = function () {
   }
 };
 
+// функция добавления активного состояния для текущей метки
 var addPinActiveState = function (currentPin) {
   removePinActiveState();
   currentPin.classList.add('map__pin--active');
 };
+
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 // по-умолчанию сервис отключен
 toggleServiceDisabled(true);
@@ -236,7 +248,7 @@ userPin.addEventListener('mouseup', onUserPinMouseup);
 
 // добавляем обработчик клика по карте
 map.addEventListener('click', function (evt) {
-  var targetPin = evt.target.closest('.map__pin');
+  var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
   if (
     targetPin && targetPin.classList.contains('map__pin') &&
     !targetPin.classList.contains('map__pin--main')
