@@ -42,12 +42,51 @@ var LOCATION_Y_MIN = 100;
 var LOCATION_Y_MAX = 500;
 
 var MAP_PIN_WIDTH = 46;
-var MAP_PIN_HEIGHT = 61;
+var MAP_PIN_HEIGHT = 62;
 
 var RUB_CURRENCY = '\u20BD';
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 var userID = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
+
+var map = document.querySelector('.map');
+var mapPins = map.querySelector('.map__pins');
+var userPin = map.querySelector('.map__pin--main');
+var mapFiltersContainer = map.querySelector('.map__filters-container');
+var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
+var mapCard = document.querySelector('template').content.querySelector('.map__card');
+
+var noticeForm = document.querySelector('.notice__form');
+var noticeFormFieldsets = document.querySelectorAll('fieldset');
+
+// переключение сервиса в неактивное/активное состояние
+var toggleServiceDisabled = function (isServiceDisabled) {
+  map.classList.toggle('map--faded', isServiceDisabled);
+  toggleNoticeFormDisabled(isServiceDisabled);
+};
+
+// переключение формы в неактивное/активное
+var toggleNoticeFormDisabled = function (isFormDisabled) {
+  noticeForm.classList.toggle('notice__form--disabled', isFormDisabled);
+  for (var i = 0; i < noticeFormFieldsets.length; i++) {
+    noticeFormFieldsets[i].disabled = isFormDisabled;
+  }
+};
+
+// по-умолчанию сервис отключен
+toggleServiceDisabled(true);
+
+// при отпускании кнопки мыши на маркере (пользовательская метка) активируем сервис и создаем другие метки
+var onUserPinMouseup = function () {
+  toggleServiceDisabled(false);
+  createPins(offers);
+};
+
+// создаем обработчик отпускания маркера
+userPin.addEventListener('mouseup', onUserPinMouseup);
 
 var getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -114,13 +153,53 @@ var getOffers = function (usersCount) {
   return offers;
 };
 
-var map = document.querySelector('.map');
-var mapPins = map.querySelector('.map__pins');
-var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
-var mapCard = document.querySelector('template').content.querySelector('.map__card');
+// функция закрытия попапа
+var closePopup = function () {
+  var popup = map.querySelector('.popup');
+  map.removeChild(popup);
+  removePinActiveState();
+  document.removeEventListener('keydown', onPopupEscPress);
+};
 
-var createPin = function (offerData) {
+// функция нажатия на Esc при открытом попапе
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// функция убирания активного состояния у активной метки
+var removePinActiveState = function () {
+  var activePin = mapPins.querySelector('.map__pin--active');
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
+  }
+};
+
+// функция установки активного состояния у для пина
+var setCurrentPinActiveState = function (pin) {
+  removePinActiveState();
+  pin.classList.add('map__pin--active');
+};
+
+// создаем пин и навешиваем события и обработчики
+var createPin = function (offerData, offerNumber) {
   var newPin = mapPin.cloneNode(true);
+  newPin.addEventListener('click', function () {
+    setCurrentPinActiveState(newPin);
+    showAdvert(offers, offerNumber);
+    var popup = document.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', function () {
+      closePopup();
+    });
+    document.addEventListener('keydown', onPopupEscPress);
+  });
+  newPin.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      setCurrentPinActiveState(newPin);
+    }
+  });
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
   var top = offerData.location.y - MAP_PIN_HEIGHT;
   newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
@@ -131,7 +210,7 @@ var createPin = function (offerData) {
 var createPins = function (offers) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < offers.length; i++) {
-    fragment.appendChild(createPin(offers[i]));
+    fragment.appendChild(createPin(offers[i], i)); // i для передачи номера объявления
   }
   mapPins.appendChild(fragment);
 };
@@ -158,12 +237,14 @@ var createAdvert = function (offerData) {
   return advert;
 };
 
+// показывает объявление, если уже есть попап, то сначала удаляем, а затем создаем новый
 var showAdvert = function (adverts, number) {
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
   var currentAdvert = createAdvert(adverts[number]);
-  map.appendChild(currentAdvert);
+  map.insertBefore(currentAdvert, mapFiltersContainer);
 };
 
 var offers = getOffers(USERS_COUNT);
-map.classList.remove('map--faded');
-createPins(offers);
-showAdvert(offers, 0);
