@@ -47,7 +47,6 @@ var MAP_PIN_HEIGHT = 62;
 var RUB_CURRENCY = '\u20BD';
 
 var ESC_KEYCODE = 27;
-var ENTER_KEYCODE = 13;
 
 var userID = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
@@ -76,17 +75,12 @@ var toggleNoticeFormDisabled = function (isFormDisabled) {
   }
 };
 
-// по-умолчанию сервис отключен
-toggleServiceDisabled(true);
-
 // при отпускании кнопки мыши на маркере (пользовательская метка) активируем сервис и создаем другие метки
 var onUserPinMouseup = function () {
   toggleServiceDisabled(false);
   createPins(offers);
+  userPin.removeEventListener('mouseup', onUserPinMouseup);
 };
-
-// создаем обработчик отпускания маркера
-userPin.addEventListener('mouseup', onUserPinMouseup);
 
 var getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -153,64 +147,21 @@ var getOffers = function (usersCount) {
   return offers;
 };
 
-// функция закрытия попапа
-var closePopup = function () {
-  var popup = map.querySelector('.popup');
-  map.removeChild(popup);
-  removePinActiveState();
-  document.removeEventListener('keydown', onPopupEscPress);
-};
-
-// функция нажатия на Esc при открытом попапе
-var onPopupEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    closePopup();
-  }
-};
-
-// функция убирания активного состояния у активной метки
-var removePinActiveState = function () {
-  var activePin = mapPins.querySelector('.map__pin--active');
-  if (activePin) {
-    activePin.classList.remove('map__pin--active');
-  }
-};
-
-// функция установки активного состояния у для пина
-var setCurrentPinActiveState = function (pin) {
-  removePinActiveState();
-  pin.classList.add('map__pin--active');
-};
-
-// создаем пин и навешиваем события и обработчики
+// создаем метки
 var createPin = function (offerData, offerNumber) {
   var newPin = mapPin.cloneNode(true);
-  newPin.addEventListener('click', function () {
-    setCurrentPinActiveState(newPin);
-    showAdvert(offers, offerNumber);
-    var popup = document.querySelector('.popup');
-    var popupClose = popup.querySelector('.popup__close');
-    popupClose.addEventListener('click', function () {
-      closePopup();
-    });
-    document.addEventListener('keydown', onPopupEscPress);
-  });
-  newPin.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      setCurrentPinActiveState(newPin);
-    }
-  });
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
   var top = offerData.location.y - MAP_PIN_HEIGHT;
   newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
   newPin.querySelector('img').src = offerData.author.avatar;
+  newPin.tabIndex = offerNumber;
   return newPin;
 };
 
 var createPins = function (offers) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < offers.length; i++) {
-    fragment.appendChild(createPin(offers[i], i)); // i для передачи номера объявления
+    fragment.appendChild(createPin(offers[i], i));
   }
   mapPins.appendChild(fragment);
 };
@@ -238,13 +189,68 @@ var createAdvert = function (offerData) {
 };
 
 // показывает объявление, если уже есть попап, то сначала удаляем, а затем создаем новый
-var showAdvert = function (adverts, number) {
+var showAdvert = function (advert) {
   var popup = map.querySelector('.popup');
   if (popup) {
     map.removeChild(popup);
   }
-  var currentAdvert = createAdvert(adverts[number]);
+  var currentAdvert = createAdvert(advert);
   map.insertBefore(currentAdvert, mapFiltersContainer);
 };
+
+// функция закрытия попапа
+var closePopup = function () {
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
+  removePinActiveState();
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// функция нажатия Esc при открытом попапе
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// функция убирания активного состояния у активной метки
+var removePinActiveState = function () {
+  var activePin = mapPins.querySelector('.map__pin--active');
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
+  }
+};
+
+var addPinActiveState = function (currentPin) {
+  removePinActiveState();
+  currentPin.classList.add('map__pin--active');
+};
+
+// по-умолчанию сервис отключен
+toggleServiceDisabled(true);
+
+// создаем обработчик отпускания маркера
+userPin.addEventListener('mouseup', onUserPinMouseup);
+
+// добавляем обработчик клика по карте
+map.addEventListener('click', function (evt) {
+  var targetPin = evt.target.closest('.map__pin');
+  if (
+    targetPin && targetPin.classList.contains('map__pin') &&
+    !targetPin.classList.contains('map__pin--main')
+  ) {
+    showAdvert(offers[targetPin.tabIndex]);
+    addPinActiveState(targetPin);
+
+    var popup = document.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', function () {
+      closePopup();
+    });
+    document.addEventListener('keydown', onPopupEscPress);
+  }
+});
 
 var offers = getOffers(USERS_COUNT);
