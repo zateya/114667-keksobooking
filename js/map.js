@@ -75,7 +75,7 @@ var toggleNoticeFormDisabled = function (isFormDisabled) {
   }
 };
 
-// при отпускании кнопки мыши на маркере (пользовательская метка) активируем сервис и создаются другие метки
+// при отпускании кнопки мыши на маркере (пользовательская метка) сервис активируется и создаются другие метки
 var onUserPinMouseup = function () {
   toggleServiceDisabled(false);
   createPins(offers);
@@ -93,7 +93,7 @@ var getRandomArrayElement = function (arr) {
   return randomElement;
 };
 
-// получение заголовка предложения
+// получение уникального заголовка предложения
 var getOfferTitle = function (titles) {
   var offerIndex = getRandomInteger(0, titles.length - 1);
   var offerTitle = offersTitles[offerIndex];
@@ -173,7 +173,7 @@ var createPins = function (offers) {
   mapPins.appendChild(fragment);
 };
 
-// формирует список особенностей для вывода в объевление
+// формирует список особенностей предложения для вывода в объявление
 var getFeaturesList = function (features) {
   var featuresList = '';
   for (var i = 0; i < features.length; i++) {
@@ -197,22 +197,24 @@ var createAdvert = function (offerData) {
   return advert;
 };
 
-// показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
-var showAdvert = function (advert) {
+// удаляет попап, если он есть
+var removePopup = function () {
   var popup = map.querySelector('.popup');
   if (popup) {
     map.removeChild(popup);
   }
+};
+
+// показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
+var showAdvert = function (advert) {
+  removePopup();
   var currentAdvert = createAdvert(advert);
   map.insertBefore(currentAdvert, mapFiltersContainer);
 };
 
 // функция закрытия попапа
 var closePopup = function () {
-  var popup = map.querySelector('.popup');
-  if (popup) {
-    map.removeChild(popup);
-  }
+  removePopup();
   removePinActiveState();
   document.removeEventListener('keydown', onPopupEscPress);
 };
@@ -224,7 +226,7 @@ var onPopupEscPress = function (evt) {
   }
 };
 
-// функция убирания активного состояния у активной метки
+// функция убирает активное состояние у метки
 var removePinActiveState = function () {
   var activePin = mapPins.querySelector('.map__pin--active');
   if (activePin) {
@@ -232,8 +234,8 @@ var removePinActiveState = function () {
   }
 };
 
-// функция добавления активного состояния для текущей метки
-var addPinActiveState = function (currentPin) {
+// функция добавляет активное состояние для текущей метки
+var addCurrentPinActiveState = function (currentPin) {
   removePinActiveState();
   currentPin.classList.add('map__pin--active');
 };
@@ -254,7 +256,7 @@ map.addEventListener('click', function (evt) {
     !targetPin.classList.contains('map__pin--main')
   ) {
     showAdvert(offers[targetPin.tabIndex]);
-    addPinActiveState(targetPin);
+    addCurrentPinActiveState(targetPin);
 
     var popup = document.querySelector('.popup');
     var popupClose = popup.querySelector('.popup__close');
