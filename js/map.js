@@ -42,12 +42,47 @@ var LOCATION_Y_MIN = 100;
 var LOCATION_Y_MAX = 500;
 
 var MAP_PIN_WIDTH = 46;
-var MAP_PIN_HEIGHT = 61;
+var MAP_PIN_HEIGHT = 62;
 
 var RUB_CURRENCY = '\u20BD';
 
+var ESC_KEYCODE = 27;
+
 var userID = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
+
+var map = document.querySelector('.map');
+var mapPins = map.querySelector('.map__pins');
+var userPin = map.querySelector('.map__pin--main');
+var mapFiltersContainer = map.querySelector('.map__filters-container');
+var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
+var mapCard = document.querySelector('template').content.querySelector('.map__card');
+
+var noticeForm = document.querySelector('.notice__form');
+var noticeFormFieldsets = document.querySelectorAll('fieldset');
+
+// переключение сервиса в неактивное/активное состояние
+var toggleServiceDisabled = function (isServiceDisabled) {
+  map.classList.toggle('map--faded', isServiceDisabled);
+  toggleNoticeFormDisabled(isServiceDisabled);
+};
+
+// переключение формы в неактивное/активное
+var toggleNoticeFormDisabled = function (isFormDisabled) {
+  noticeForm.classList.toggle('notice__form--disabled', isFormDisabled);
+  for (var i = 0; i < noticeFormFieldsets.length; i++) {
+    noticeFormFieldsets[i].disabled = isFormDisabled;
+  }
+};
+
+// при отпускании кнопки мыши на маркере (пользовательская метка) сервис активируется и создаются другие метки
+var onUserPinMouseup = function () {
+  toggleServiceDisabled(false);
+  createPins(offers);
+  userPin.removeEventListener('mouseup', onUserPinMouseup);
+};
+
+// функции для работы с массивами
 
 var getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -58,6 +93,7 @@ var getRandomArrayElement = function (arr) {
   return randomElement;
 };
 
+// получение уникального заголовка предложения
 var getOfferTitle = function (titles) {
   var offerIndex = getRandomInteger(0, titles.length - 1);
   var offerTitle = offersTitles[offerIndex];
@@ -65,6 +101,7 @@ var getOfferTitle = function (titles) {
   return offerTitle;
 };
 
+// получение массива с особенностями предложения
 var getFeatures = function (features) {
   var offerFeatures = [];
   var featuresCount = getRandomInteger(1, features.length);
@@ -74,6 +111,7 @@ var getFeatures = function (features) {
   return offerFeatures;
 };
 
+// формирование объекта с данными по предложению
 var getOfferData = function () {
   var locationX = getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
   var locationY = getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
@@ -106,6 +144,7 @@ var getOfferData = function () {
   };
 };
 
+// формирование массива объектов недвижимости
 var getOffers = function (usersCount) {
   var offers = [];
   for (var i = 0; i < usersCount; i++) {
@@ -114,28 +153,27 @@ var getOffers = function (usersCount) {
   return offers;
 };
 
-var map = document.querySelector('.map');
-var mapPins = map.querySelector('.map__pins');
-var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
-var mapCard = document.querySelector('template').content.querySelector('.map__card');
+// создает метки на карте
 
-var createPin = function (offerData) {
+var createPin = function (offerData, offerNumber) {
   var newPin = mapPin.cloneNode(true);
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
   var top = offerData.location.y - MAP_PIN_HEIGHT;
   newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
   newPin.querySelector('img').src = offerData.author.avatar;
+  newPin.tabIndex = offerNumber;
   return newPin;
 };
 
 var createPins = function (offers) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < offers.length; i++) {
-    fragment.appendChild(createPin(offers[i]));
+    fragment.appendChild(createPin(offers[i], i));
   }
   mapPins.appendChild(fragment);
 };
 
+// формирует список особенностей предложения для вывода в объявление
 var getFeaturesList = function (features) {
   var featuresList = '';
   for (var i = 0; i < features.length; i++) {
@@ -144,6 +182,7 @@ var getFeaturesList = function (features) {
   return featuresList;
 };
 
+// формирует текст объявления
 var createAdvert = function (offerData) {
   var advert = mapCard.cloneNode(true);
   advert.querySelector('h3').textContent = offerData.offer.title;
@@ -158,12 +197,74 @@ var createAdvert = function (offerData) {
   return advert;
 };
 
-var showAdvert = function (adverts, number) {
-  var currentAdvert = createAdvert(adverts[number]);
-  map.appendChild(currentAdvert);
+// удаляет попап, если он есть
+var removePopup = function () {
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
 };
 
+// показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
+var showAdvert = function (advert) {
+  removePopup();
+  var currentAdvert = createAdvert(advert);
+  map.insertBefore(currentAdvert, mapFiltersContainer);
+};
+
+// функция закрытия попапа
+var closePopup = function () {
+  removePopup();
+  removePinActiveState();
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// функция нажатия Esc при открытом попапе
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// функция убирает активное состояние у метки
+var removePinActiveState = function () {
+  var activePin = mapPins.querySelector('.map__pin--active');
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
+  }
+};
+
+// функция добавляет активное состояние для текущей метки
+var addCurrentPinActiveState = function (currentPin) {
+  removePinActiveState();
+  currentPin.classList.add('map__pin--active');
+};
+
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
+// по-умолчанию сервис отключен
+toggleServiceDisabled(true);
+
+// создаем обработчик отпускания маркера
+userPin.addEventListener('mouseup', onUserPinMouseup);
+
+// добавляем обработчик клика по карте
+map.addEventListener('click', function (evt) {
+  var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
+  if (
+    targetPin && targetPin.classList.contains('map__pin') &&
+    !targetPin.classList.contains('map__pin--main')
+  ) {
+    showAdvert(offers[targetPin.tabIndex]);
+    addCurrentPinActiveState(targetPin);
+
+    var popup = document.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', function () {
+      closePopup();
+    });
+    document.addEventListener('keydown', onPopupEscPress);
+  }
+});
+
 var offers = getOffers(USERS_COUNT);
-map.classList.remove('map--faded');
-createPins(offers);
-showAdvert(offers, 0);
