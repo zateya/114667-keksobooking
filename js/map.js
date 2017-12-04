@@ -143,7 +143,7 @@ var setPriceFieldMinValues = function () {
 var hideCapacityFieldValues = function () {
   for (var i = 0; i < roomsField.length; i++) {
     if (
-      roomsField.value > roomsField.length //                   Прячем поля в поле Вместимость:
+      roomsField.value > roomsField.length //                   Прячем значения в поле Вместимость:
       && capacityField.children[i].value !== '0'//              1. если выбрано 100 комнат скроет все кроме -не для гостей-,
       || capacityField.children[i].value > roomsField.value //  2. если вместимость > числа комнат, то скроет вместимость
       || capacityField.children[i].value === '0' //             3. скроет -не для гостей- везде кроме 100 комнат
