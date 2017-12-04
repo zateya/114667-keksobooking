@@ -175,18 +175,38 @@ var setCapacityFieldValues = function () {
   }
 };
 
+var resetInvalidFieldStyle = function (field) {
+  field.style.borderColor = '';
+};
+
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 getAddress();
 setPriceFieldMinValues();
 setCapacityFieldValues();
 
-if (priceField) {
-  priceField.addEventListener('invalid', onPriceFieldInvalid);
-}
-
 if (titleField) {
   titleField.addEventListener('invalid', onTitleFieldInvalid);
+
+  titleField.addEventListener('focus', function () {
+    resetInvalidFieldStyle(titleField);
+  });
+
+  titleField.addEventListener('blur', function () {
+    titleField.checkValidity();
+  });
+}
+
+if (priceField) {
+  priceField.addEventListener('invalid', onPriceFieldInvalid);
+
+  priceField.addEventListener('focus', function () {
+    resetInvalidFieldStyle(priceField);
+  });
+
+  priceField.addEventListener('blur', function () {
+    priceField.checkValidity();
+  });
 }
 
 if (typeField) {
