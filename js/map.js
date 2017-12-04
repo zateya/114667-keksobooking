@@ -92,59 +92,13 @@ var toggleNoticeFormDisabled = function (isFormDisabled) {
 
 // валидация формы объявления
 
-var onTimeInFieldChange = function () {
-  if (timeInField && timeOutField) {
-    timeOutField.value = timeInField.value;
-  }
-};
-
-var onTimeOutFieldChange = function () {
-  if (timeInField && timeOutField) {
-    timeInField.value = timeOutField.value;
-  }
-};
-
-var setPriceFieldMinValues = function () {
-  if (typeField && priceField) {
-    priceField.min = TYPES[typeField.value].minPrice;
-  }
-};
-
+// получение адреса по-умолчанию
 var getAddress = function () {
   var pin = document.querySelector('.map__pin--main');
   if (pin) {
     var pinLeft = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
     var pinTop = window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2);
     addressField.value = pinLeft + ', ' + pinTop;
-  }
-};
-
-var hideCapacityFieldValues = function () {
-  if (roomsField && capacityField) {
-    for (var i = 0; i < roomsField.length; i++) {
-      if (
-        roomsField.value > roomsField.length //                   Прячем поля:
-        && capacityField.children[i].value !== '0'//              1. если выбрано 100 комнат скроет все кроме -не для гостей-,
-        || capacityField.children[i].value > roomsField.value //  2. если вместимость > числа комнат, то скроет вместимость
-        || capacityField.children[i].value === '0' //             3. скроет -не для гостей- везде кроме 100 комнат
-        && roomsField.value < roomsField.length //
-      ) {
-        capacityField.children[i].hidden = true;
-      } else {
-        capacityField.children[i].hidden = false;
-      }
-    }
-  }
-};
-
-var setCapacityFieldValues = function () {
-  if (roomsField && capacityField) {
-    if (roomsField.value < roomsField.length) {
-      capacityField.value = roomsField.value;
-    } else {
-      capacityField.value = '0';
-    }
-    hideCapacityFieldValues();
   }
 };
 
@@ -171,6 +125,53 @@ var onPriceFieldInvalid = function () {
     priceField.setCustomValidity('Обязательное поле');
   } else {
     priceField.setCustomValidity('');
+  }
+};
+
+var onTimeInFieldChange = function () {
+  if (timeInField && timeOutField) {
+    timeOutField.value = timeInField.value;
+  }
+};
+
+var onTimeOutFieldChange = function () {
+  if (timeInField && timeOutField) {
+    timeInField.value = timeOutField.value;
+  }
+};
+
+var setPriceFieldMinValues = function () {
+  if (typeField && priceField) {
+    priceField.min = TYPES[typeField.value].minPrice;
+  }
+};
+
+var hideCapacityFieldValues = function () {
+  if (roomsField && capacityField) {
+    for (var i = 0; i < roomsField.length; i++) {
+      if (
+        roomsField.value > roomsField.length //                   Прячем поля в поле Вместимость:
+        && capacityField.children[i].value !== '0'//              1. если выбрано 100 комнат скроет все кроме -не для гостей-,
+        || capacityField.children[i].value > roomsField.value //  2. если вместимость > числа комнат, то скроет вместимость
+        || capacityField.children[i].value === '0' //             3. скроет -не для гостей- везде кроме 100 комнат
+        && roomsField.value < roomsField.length //
+      ) {
+        capacityField.children[i].hidden = true;
+      } else {
+        capacityField.children[i].hidden = false;
+      }
+    }
+  }
+};
+
+var setCapacityFieldValues = function () {
+  if (roomsField && capacityField) {
+    if (roomsField.value < roomsField.length) {
+      capacityField.value = roomsField.value;
+    } else {
+      capacityField.value = '0';
+    }
+    hideCapacityFieldValues();
   }
 };
 
