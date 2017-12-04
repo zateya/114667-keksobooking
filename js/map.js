@@ -21,13 +21,20 @@ var PRICE_MAX = 1000000;
 var PROPERTY_TYPES = ['flat', 'house', 'bungalo'];
 var TYPES = {
   flat: {
-    ru: 'Квартира'
+    ru: 'Квартира',
+    minPrice: 1000
   },
   bungalo: {
-    ru: 'Бунгало'
+    ru: 'Бунгало',
+    minPrice: 0
   },
   house: {
-    ru: 'Дом'
+    ru: 'Дом',
+    minPrice: 5000
+  },
+  palace: {
+    ru: 'Дворец',
+    minPrice: 10000
   }
 };
 var ROOMS_MIN = 1;
@@ -48,7 +55,7 @@ var RUB_CURRENCY = '\u20BD';
 
 var ESC_KEYCODE = 27;
 
-var userID = 0;
+var userId = 0;
 var offersTitles = OFFERS_TITLES.slice(0, OFFERS_TITLES.length);
 
 var map = document.querySelector('.map');
@@ -60,11 +67,19 @@ var mapCard = document.querySelector('template').content.querySelector('.map__ca
 
 var noticeForm = document.querySelector('.notice__form');
 var noticeFormFieldsets = document.querySelectorAll('fieldset');
+var titleField = noticeForm.querySelector('#title');
+var addressField = noticeForm.querySelector('#address');
+var timeInField = noticeForm.querySelector('#timein');
+var timeOutField = noticeForm.querySelector('#timeout');
+var typeField = noticeForm.querySelector('#type');
+var priceField = noticeForm.querySelector('#price');
+var roomsField = noticeForm.querySelector('#room_number');
+var capacityField = noticeForm.querySelector('#capacity');
+var submitButton = noticeForm.querySelector('.form__submit');
 
 // переключение сервиса в неактивное/активное состояние
-var toggleServiceDisabled = function (isServiceDisabled) {
-  map.classList.toggle('map--faded', isServiceDisabled);
-  toggleNoticeFormDisabled(isServiceDisabled);
+var toggleMapDisabled = function (isMapDisabled) {
+  map.classList.toggle('map--faded', isMapDisabled);
 };
 
 // переключение формы в неактивное/активное
@@ -75,15 +90,207 @@ var toggleNoticeFormDisabled = function (isFormDisabled) {
   }
 };
 
+// валидация формы объявления
+
+var onTimeInFieldChange = function () {
+  if (timeInField && timeOutField) {
+    timeOutField.value = timeInField.value;
+  }
+};
+
+var onTimeOutFieldChange = function () {
+  if (timeInField && timeOutField) {
+    timeInField.value = timeOutField.value;
+  }
+};
+
+var setPriceFieldMinValues = function () {
+  if (typeField && priceField) {
+    priceField.min = TYPES[typeField.value].minPrice;
+  }
+};
+
+var getAddress = function () {
+  var pin = document.querySelector('.map__pin--main');
+  if (pin) {
+    var pinLeft = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
+    var pinTop = window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2);
+    addressField.value = pinLeft + ', ' + pinTop;
+  }
+};
+
+var hideCapacityFieldValues = function () {
+  if (roomsField && capacityField) {
+    for (var i = 0; i < roomsField.length; i++) {
+      if (
+        roomsField.value > roomsField.length //                   Прячем поля:
+        && capacityField.children[i].value !== '0'//              1. если выбрано 100 комнат скроет все кроме -не для гостей-,
+        || capacityField.children[i].value > roomsField.value //  2. если вместимость > числа комнат, то скроет вместимость
+        || capacityField.children[i].value === '0' //             3. скроет -не для гостей- везде кроме 100 комнат
+        && roomsField.value < roomsField.length //
+      ) {
+        capacityField.children[i].hidden = true;
+      } else {
+        capacityField.children[i].hidden = false;
+      }
+    }
+  }
+};
+
+var setCapacityFieldValues = function () {
+  if (roomsField && capacityField) {
+    if (roomsField.value < roomsField.length) {
+      capacityField.value = roomsField.value;
+    } else {
+      capacityField.value = '0';
+    }
+    hideCapacityFieldValues();
+  }
+};
+
+// Валидация текста в поле Заголовок
+var onTitleFieldInvalid = function () {
+  if (titleField.validity.tooShort) {
+    titleField.setCustomValidity('Минимальная длина — 30 символов');
+  } else if (titleField.validity.tooLong) {
+    titleField.setCustomValidity('Максимальная длина — 100 символов');
+  } else if (titleField.validity.valueMissing) {
+    titleField.setCustomValidity('Обязательное поле');
+  } else {
+    titleField.setCustomValidity('');
+  }
+};
+
+// Валидация значения в поле Цена
+var onPriceFieldInvalid = function () {
+  if (priceField.validity.rangeUnderflow) {
+    priceField.setCustomValidity('Минимальная цена — ' + priceField.min);
+  } else if (priceField.validity.rangeOverflow) {
+    priceField.setCustomValidity('Максимальная цена — ' + priceField.max);
+  } else if (priceField.validity.valueMissing) {
+    priceField.setCustomValidity('Обязательное поле');
+  } else {
+    priceField.setCustomValidity('');
+  }
+};
+
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
+getAddress();
+setPriceFieldMinValues();
+setCapacityFieldValues();
+
+if (priceField) {
+  priceField.addEventListener('invalid', onPriceFieldInvalid);
+}
+
+if (titleField) {
+  titleField.addEventListener('invalid', onTitleFieldInvalid);
+}
+
+if (typeField) {
+  typeField.addEventListener('change', function () {
+    setPriceFieldMinValues();
+  });
+}
+
+if (roomsField) {
+  roomsField.addEventListener('change', function () {
+    setCapacityFieldValues();
+  });
+}
+
+if (timeInField) {
+  timeInField.addEventListener('change', onTimeInFieldChange);
+}
+
+if (timeOutField) {
+  timeOutField.addEventListener('change', onTimeOutFieldChange);
+}
+
+noticeForm.addEventListener('invalid', function (evt) {
+  var invalidField = evt.target;
+  invalidField.style.borderColor = 'red';
+}, true);
+
+submitButton.addEventListener('click', function () {
+  if (noticeForm.checkValidity()) {
+    noticeForm.submit();
+  }
+});
+
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
+// функция убирает активное состояние у метки
+var removePinActiveState = function () {
+  var activePin = mapPins.querySelector('.map__pin--active');
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
+  }
+};
+
+// функция добавляет активное состояние для текущей метки
+var addCurrentPinActiveState = function (currentPin) {
+  removePinActiveState();
+  currentPin.classList.add('map__pin--active');
+};
+
+// удаляет попап, если он есть
+var removePopup = function () {
+  var popup = map.querySelector('.popup');
+  if (popup) {
+    map.removeChild(popup);
+  }
+};
+
+// функция закрытия попапа
+var closePopup = function () {
+  removePopup();
+  removePinActiveState();
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// функция нажатия Esc при открытом попапе
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// функция нажатия на кнопку Закрыть в попап
+var onPopupCloseClick = function () {
+  closePopup();
+};
+
+// функция обработки клика по карте
+var onMapPinClick = function (evt) {
+  var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
+  if (
+    targetPin && targetPin.classList.contains('map__pin') &&
+    !targetPin.classList.contains('map__pin--main')
+  ) {
+    showAdvert(offers[targetPin.tabIndex]);
+    addCurrentPinActiveState(targetPin);
+
+    var popup = document.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', onPopupCloseClick);
+
+    document.addEventListener('keydown', onPopupEscPress);
+  }
+};
+
 // при отпускании кнопки мыши на маркере (пользовательская метка) сервис активируется и создаются другие метки
 var onUserPinMouseup = function () {
-  toggleServiceDisabled(false);
+  toggleMapDisabled(false);
+  toggleNoticeFormDisabled(false);
   createPins(offers);
+
+  map.addEventListener('click', onMapPinClick);
   userPin.removeEventListener('mouseup', onUserPinMouseup);
 };
 
 // функции для работы с массивами
-
 var getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -118,11 +325,11 @@ var getOfferData = function () {
   var propertyAddress = locationX + ', ' + locationY;
   var roomsCount = getRandomInteger(ROOMS_MIN, ROOMS_MAX);
   var guestsCount = getRandomInteger(1, roomsCount);
-  userID++;
+  userId++;
 
   return {
     'author': {
-      'avatar': AVATAR_FILE_MASK + AVATAR_ID_PREFIX + userID + AVATAR_FILE_EXTENSION
+      'avatar': AVATAR_FILE_MASK + AVATAR_ID_PREFIX + userId + AVATAR_FILE_EXTENSION
     },
     'offer': {
       'title': getOfferTitle(offersTitles),
@@ -154,7 +361,6 @@ var getOffers = function (usersCount) {
 };
 
 // создает метки на карте
-
 var createPin = function (offerData, offerNumber) {
   var newPin = mapPin.cloneNode(true);
   var left = offerData.location.x - MAP_PIN_WIDTH / 2;
@@ -197,14 +403,6 @@ var createAdvert = function (offerData) {
   return advert;
 };
 
-// удаляет попап, если он есть
-var removePopup = function () {
-  var popup = map.querySelector('.popup');
-  if (popup) {
-    map.removeChild(popup);
-  }
-};
-
 // показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
 var showAdvert = function (advert) {
   removePopup();
@@ -212,59 +410,15 @@ var showAdvert = function (advert) {
   map.insertBefore(currentAdvert, mapFiltersContainer);
 };
 
-// функция закрытия попапа
-var closePopup = function () {
-  removePopup();
-  removePinActiveState();
-  document.removeEventListener('keydown', onPopupEscPress);
-};
-
-// функция нажатия Esc при открытом попапе
-var onPopupEscPress = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    closePopup();
-  }
-};
-
-// функция убирает активное состояние у метки
-var removePinActiveState = function () {
-  var activePin = mapPins.querySelector('.map__pin--active');
-  if (activePin) {
-    activePin.classList.remove('map__pin--active');
-  }
-};
-
-// функция добавляет активное состояние для текущей метки
-var addCurrentPinActiveState = function (currentPin) {
-  removePinActiveState();
-  currentPin.classList.add('map__pin--active');
-};
-
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 // по-умолчанию сервис отключен
-toggleServiceDisabled(true);
+toggleMapDisabled(true);
+toggleNoticeFormDisabled(true);
 
 // создаем обработчик отпускания маркера
-userPin.addEventListener('mouseup', onUserPinMouseup);
-
-// добавляем обработчик клика по карте
-map.addEventListener('click', function (evt) {
-  var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
-  if (
-    targetPin && targetPin.classList.contains('map__pin') &&
-    !targetPin.classList.contains('map__pin--main')
-  ) {
-    showAdvert(offers[targetPin.tabIndex]);
-    addCurrentPinActiveState(targetPin);
-
-    var popup = document.querySelector('.popup');
-    var popupClose = popup.querySelector('.popup__close');
-    popupClose.addEventListener('click', function () {
-      closePopup();
-    });
-    document.addEventListener('keydown', onPopupEscPress);
-  }
-});
+if (userPin) {
+  userPin.addEventListener('mouseup', onUserPinMouseup);
+}
 
 var offers = getOffers(USERS_COUNT);
