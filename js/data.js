@@ -68,11 +68,15 @@
   var PIN_PARAMS = {
     user: {
       width: 65,
-      height: 98
+      height: 64,
+      arrowHeight: 17,
+      arrowCenterOffset: 49
     },
     rival: {
       width: 46,
-      height: 62
+      height: 44,
+      arrowHeight: 18,
+      arrowCenterOffset: 30
     }
   };
 
