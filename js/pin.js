@@ -21,7 +21,7 @@
   // создает метки на карте
   var createPin = function (offerData, offerNumber) {
     var newPin = mapPin.cloneNode(true);
-    var left = offerData.location.x + window.data.pinParams.rival.width / 2;
+    var left = offerData.location.x - window.data.pinParams.rival.width / 2;
     var top = offerData.location.y + window.data.pinParams.rival.height;
     newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
     newPin.querySelector('img').src = offerData.author.avatar;

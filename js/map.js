@@ -64,7 +64,7 @@
         y: userPin.offsetTop - shift.y
       };
 
-      if (window.data.mapCoords.x.min < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max) {
+      if (window.data.mapCoords.x.min - window.data.pinParams.user.width / 2 < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max - window.data.pinParams.user.width / 2) {
         userPin.style.left = currentCoords.x + 'px';
       }
 
