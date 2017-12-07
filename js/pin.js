@@ -1,9 +1,6 @@
 'use strict';
 
 (function () {
-  var MAP_PIN_WIDTH = 46;
-  var MAP_PIN_HEIGHT = 62;
-
   var mapPins = document.querySelector('.map__pins');
   var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
 
@@ -24,8 +21,8 @@
   // создает метки на карте
   var createPin = function (offerData, offerNumber) {
     var newPin = mapPin.cloneNode(true);
-    var left = offerData.location.x - MAP_PIN_WIDTH / 2;
-    var top = offerData.location.y - MAP_PIN_HEIGHT;
+    var left = offerData.location.x + window.data.pinParams.rival.width / 2;
+    var top = offerData.location.y + window.data.pinParams.rival.height;
     newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
     newPin.querySelector('img').src = offerData.author.avatar;
     newPin.tabIndex = offerNumber;

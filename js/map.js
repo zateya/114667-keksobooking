@@ -36,6 +36,59 @@
     }
   };
 
+  userPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    userPin.style.zIndex = '2';
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onPinMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var currentCoords = {
+        x: userPin.offsetLeft - shift.x,
+        y: userPin.offsetTop - shift.y
+      };
+
+      if (window.data.mapCoords.x.min < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max) {
+        userPin.style.left = currentCoords.x + 'px';
+      }
+
+      if (window.data.mapCoords.y.min < currentCoords.y && currentCoords.y < window.data.mapCoords.y.max) {
+        userPin.style.top = currentCoords.y + 'px';
+      }
+
+      var addressX = currentCoords.x + window.data.pinParams.user.width / 2;
+      var addressY = currentCoords.y + window.data.pinParams.user.height;
+
+      window.form.setAddressValue(addressX, addressY);
+    };
+
+    var onPinMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onPinMouseMove);
+      document.removeEventListener('mouseup', onPinMouseUp);
+    };
+
+    document.addEventListener('mousemove', onPinMouseMove);
+    document.addEventListener('mouseup', onPinMouseUp);
+  });
+
   // при отпускании кнопки мыши на маркере (пользовательская метка) сервис активируется и создаются другие метки
   var onUserPinMouseup = function () {
     toggleMapDisabled(false);
