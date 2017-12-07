@@ -76,7 +76,7 @@
       width: 46,
       height: 44,
       arrowHeight: 18,
-      arrowCenterOffset: 30
+      arrowCenterOffset: 39
     }
   };
 
