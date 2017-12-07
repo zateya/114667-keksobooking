@@ -61,22 +61,22 @@
       max: 900
     },
     y: {
-      min: 100,
-      max: 500
+      min: 160,
+      max: 680
     }
   };
   var PIN_PARAMS = {
     user: {
       width: 65,
-      height: 64,
-      arrowHeight: 17,
-      arrowCenterOffset: 49
+      height: 82,
+      offsetX: 0,
+      offsetY: 48
     },
     rival: {
       width: 46,
-      height: 44,
-      arrowHeight: 18,
-      arrowCenterOffset: 39
+      height: 62,
+      offsetX: 5,
+      offsetY: 39
     }
   };
 

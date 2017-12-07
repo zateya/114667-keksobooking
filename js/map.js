@@ -64,15 +64,18 @@
         y: userPin.offsetTop - shift.y
       };
 
+      var yMin = window.data.mapCoords.y.min - window.data.pinParams.user.offsetY;
+      var yMax = window.data.mapCoords.y.max - window.data.pinParams.user.offsetY;
+
       if (window.data.mapCoords.x.min < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max) {
         userPin.style.left = currentCoords.x + 'px';
       }
 
-      if (window.data.mapCoords.y.min < currentCoords.y && currentCoords.y < window.data.mapCoords.y.max) {
+      if (yMin < currentCoords.y && currentCoords.y < yMax) {
         userPin.style.top = currentCoords.y + 'px';
       }
 
-      window.form.setAddressValue(currentCoords.x, currentCoords.y + window.data.pinParams.user.arrowCenterOffset);
+      window.form.setAddressValue(currentCoords.x, currentCoords.y + window.data.pinParams.user.offsetY);
     };
 
     var onPinMouseUp = function (upEvt) {
