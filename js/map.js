@@ -72,7 +72,7 @@
         userPin.style.top = currentCoords.y + 'px';
       }
 
-      window.form.setAddressValue(currentCoords.x, currentCoords.y);
+      window.form.setAddressValue(currentCoords.x, currentCoords.y + window.data.pinParams.user.height / 2);
     };
 
     var onPinMouseUp = function (upEvt) {

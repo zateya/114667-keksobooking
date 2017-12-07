@@ -29,13 +29,8 @@
   var getDefaultAddress = function () {
     var pin = document.querySelector('.map__pin--main');
     if (pin) {
-      var x =
-      parseInt(window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2), 10)
-      + window.data.pinParams.user.width / 2;
-
-      var y =
-      parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10)
-      + window.data.pinParams.user.height;
+      var x = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
+      var y = parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10) + window.data.pinParams.user.height / 2;
       setAddressFieldValue(x, y);
     }
   };
