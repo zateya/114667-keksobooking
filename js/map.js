@@ -64,7 +64,7 @@
         y: userPin.offsetTop - shift.y
       };
 
-      if (window.data.mapCoords.x.min - window.data.pinParams.user.width / 2 < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max - window.data.pinParams.user.width / 2) {
+      if (window.data.mapCoords.x.min < currentCoords.x && currentCoords.x < window.data.mapCoords.x.max) {
         userPin.style.left = currentCoords.x + 'px';
       }
 
@@ -72,10 +72,7 @@
         userPin.style.top = currentCoords.y + 'px';
       }
 
-      var addressX = currentCoords.x + window.data.pinParams.user.width / 2;
-      var addressY = currentCoords.y + window.data.pinParams.user.height;
-
-      window.form.setAddressValue(addressX, addressY);
+      window.form.setAddressValue(currentCoords.x, currentCoords.y);
     };
 
     var onPinMouseUp = function (upEvt) {

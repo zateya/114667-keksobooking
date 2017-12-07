@@ -102,7 +102,7 @@
   // формирование объекта с данными по предложению
   var getOfferData = function () {
     var locationX = window.utils.getRandomInteger(MAP_COORDS.x.min, MAP_COORDS.x.max);
-    var locationY = window.utils.getRandomInteger(MAP_COORDS.y.min, MAP_COORDS.y.max);
+    var locationY = window.utils.getRandomInteger(MAP_COORDS.y.min + PIN_PARAMS.rival.height, MAP_COORDS.y.max);
     var roomsCount = window.utils.getRandomInteger(ROOMS.min, ROOMS.max);
     userId++;
 
