@@ -21,13 +21,17 @@
     }
   };
 
+  var setAddressFieldValue = function (x, y) {
+    addressField.value = 'x: ' + x + ', y: ' + y;
+  };
+
   // получение адреса по-умолчанию
-  var getAddress = function () {
+  var getDefaultAddress = function () {
     var pin = document.querySelector('.map__pin--main');
     if (pin) {
-      var pinLeft = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
-      var pinTop = window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2);
-      addressField.value = pinLeft + ', ' + pinTop;
+      var x = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
+      var y = parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10) + window.data.pinParams.user.offsetY;
+      setAddressFieldValue(x, y);
     }
   };
 
@@ -69,43 +73,27 @@
     priceField.min = priceField.placeholder = window.data.types[typeField.value].minPrice;
   };
 
-  var hideCapacityFieldValues = function () {
-    for (var i = 0; i < roomsField.length; i++) {
-      if (
-        roomsField.value > roomsField.length //                   Прячем значения в поле Вместимость:
-        && capacityField.children[i].value !== '0'//              1. если выбрано 100 комнат скроет все кроме -не для гостей-,
-        || capacityField.children[i].value > roomsField.value //  2. если вместимость > числа комнат, то скроет вместимость
-        || capacityField.children[i].value === '0' //             3. скроет -не для гостей- везде кроме 100 комнат
-        && roomsField.value < roomsField.length //
-      ) {
-        capacityField.children[i].hidden = true;
-      } else {
-        capacityField.children[i].hidden = false;
-      }
-    }
-  };
-
   var setCapacityFieldValues = function () {
-    if (roomsField.value < roomsField.length) {
-      capacityField.value = roomsField.value;
-    } else {
-      capacityField.value = '0';
+    if (capacityField.options.length > 0) {
+      [].forEach.call(capacityField.options, function (item) {
+        item.selected = (window.data.roomsCapacity[roomsField.value][0] === item.value) ? true : false;
+        item.hidden = (window.data.roomsCapacity[roomsField.value].indexOf(item.value) >= 0) ? false : true;
+      });
     }
-    hideCapacityFieldValues();
   };
 
   var resetInvalidFieldStyle = function (field) {
     field.style.borderColor = '';
   };
 
-  getAddress();
+  getDefaultAddress();
   setPriceFieldMinValues();
   setCapacityFieldValues();
 
   if (titleField) {
     titleField.addEventListener('invalid', onTitleFieldInvalid);
 
-    titleField.addEventListener('focus', function () {
+    titleField.addEventListener('input', function () {
       resetInvalidFieldStyle(titleField);
     });
 
@@ -117,7 +105,7 @@
   if (priceField) {
     priceField.addEventListener('invalid', onPriceFieldInvalid);
 
-    priceField.addEventListener('focus', function () {
+    priceField.addEventListener('input', function () {
       resetInvalidFieldStyle(priceField);
     });
 
@@ -158,6 +146,7 @@
   });
 
   window.form = {
-    isDisabled: toggleNoticeFormDisabled
+    isDisabled: toggleNoticeFormDisabled,
+    setAddressValue: setAddressFieldValue
   };
 })();

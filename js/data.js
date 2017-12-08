@@ -17,8 +17,10 @@
     'Неуютное бунгало по колено в воде'
   ];
 
-  var PRICE_MIN = 1000;
-  var PRICE_MAX = 1000000;
+  var PRICE = {
+    min: 1000,
+    max: 1000000
+  };
   var PROPERTY_TYPES = ['flat', 'house', 'bungalo'];
   var TYPES = {
     flat: {
@@ -38,16 +40,45 @@
       minPrice: 10000
     }
   };
-  var ROOMS_MIN = 1;
-  var ROOMS_MAX = 5;
+
+  var ROOMS = {
+    min: 1,
+    max: 5
+  };
+  var ROOMS_CAPACITY = {
+    '1': ['1'],
+    '2': ['2', '1'],
+    '3': ['3', '2', '1'],
+    '100': ['0']
+  };
+
   var TIME = ['12:00', '13:00', '14:00'];
   var FEATURES_LIST = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
-  var LOCATION_X_MIN = 300;
-  var LOCATION_X_MAX = 900;
-
-  var LOCATION_Y_MIN = 100;
-  var LOCATION_Y_MAX = 500;
+  var MAP_COORDS = {
+    x: {
+      min: 300,
+      max: 900
+    },
+    y: {
+      min: 160,
+      max: 680
+    }
+  };
+  var PIN_PARAMS = {
+    user: {
+      width: 65,
+      height: 82,
+      offsetX: 0,
+      offsetY: 48
+    },
+    rival: {
+      width: 46,
+      height: 62,
+      offsetX: 5,
+      offsetY: 39
+    }
+  };
 
   var RUB_CURRENCY = '\u20BD';
 
@@ -74,9 +105,9 @@
 
   // формирование объекта с данными по предложению
   var getOfferData = function () {
-    var locationX = window.utils.getRandomInteger(LOCATION_X_MIN, LOCATION_X_MAX);
-    var locationY = window.utils.getRandomInteger(LOCATION_Y_MIN, LOCATION_Y_MAX);
-    var roomsCount = window.utils.getRandomInteger(ROOMS_MIN, ROOMS_MAX);
+    var locationX = window.utils.getRandomInteger(MAP_COORDS.x.min, MAP_COORDS.x.max);
+    var locationY = window.utils.getRandomInteger(MAP_COORDS.y.min, MAP_COORDS.y.max);
+    var roomsCount = window.utils.getRandomInteger(ROOMS.min, ROOMS.max);
     userId++;
 
     return {
@@ -86,7 +117,7 @@
       'offer': {
         'title': getOfferTitle(offersTitles),
         'address': locationX + ', ' + locationY,
-        'price': window.utils.getRandomInteger(PRICE_MIN, PRICE_MAX),
+        'price': window.utils.getRandomInteger(PRICE.min, PRICE.max),
         'type': window.utils.getRandomArrayElement(PROPERTY_TYPES),
         'rooms': roomsCount,
         'guests': window.utils.getRandomInteger(1, roomsCount),
@@ -117,6 +148,9 @@
   window.data = {
     offers: offers,
     types: TYPES,
-    rubCurrency: RUB_CURRENCY
+    roomsCapacity: ROOMS_CAPACITY,
+    rubCurrency: RUB_CURRENCY,
+    mapCoords: MAP_COORDS,
+    pinParams: PIN_PARAMS
   };
 })();
