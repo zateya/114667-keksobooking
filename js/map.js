@@ -18,24 +18,6 @@
     mapPins.appendChild(fragment);
   };
 
-  // функция обработки клика по карте
-  var onMapPinClick = function (evt) {
-    var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
-    if (
-      targetPin && targetPin.classList.contains('map__pin') &&
-      !targetPin.classList.contains('map__pin--main')
-    ) {
-      window.card.show(window.data.offers[targetPin.tabIndex]);
-      window.pin.activate(targetPin);
-
-      var popup = document.querySelector('.popup');
-      var popupClose = popup.querySelector('.popup__close');
-      popupClose.addEventListener('click', window.card.closeClick);
-
-      document.addEventListener('keydown', window.card.escPress);
-    }
-  };
-
   userPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
@@ -95,7 +77,7 @@
     window.form.isDisabled(false);
     createPins(window.data.offers);
 
-    map.addEventListener('click', onMapPinClick);
+    map.addEventListener('click', window.showCard);
     userPin.removeEventListener('mouseup', onUserPinMouseup);
   };
 
