@@ -25,7 +25,8 @@
     var top = offerData.location.y - window.data.pinParams.rival.offsetY;
     newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
     newPin.querySelector('img').src = offerData.author.avatar;
-    newPin.tabIndex = offerNumber;
+    newPin.dataset.id = offerNumber;
+    newPin.tabIndex = 0;
     return newPin;
   };
 

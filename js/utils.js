@@ -2,6 +2,7 @@
 
 (function () {
   var ESC_KEYCODE = 27;
+  var RUB_CURRENCY = '\u20BD';
 
   // при нажатии клавиши Escape
   var isEscEvent = function (evt, action) {
@@ -23,6 +24,7 @@
   window.utils = {
     isEscEvent: isEscEvent,
     getRandomInteger: getRandomInteger,
-    getRandomArrayElement: getRandomArrayElement
+    getRandomArrayElement: getRandomArrayElement,
+    rubCurrency: RUB_CURRENCY
   };
 })();
