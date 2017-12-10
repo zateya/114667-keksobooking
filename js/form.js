@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = document.querySelectorAll('fieldset');
   var titleField = noticeForm.querySelector('#title');
@@ -61,18 +62,52 @@
     }
   };
 
+  // синхронизация полей
+
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
+  };
+
+  var getOptionsValuesArray = function (element) {
+    var values = [];
+    [].forEach.call(element.options, function (item) {
+      values.push(item.value);
+    });
+    return values;
+  };
+
+  var timeInValues = getOptionsValuesArray(timeInField);
+  var timeOutValues = getOptionsValuesArray(timeOutField);
+  var typeFieldValues = getOptionsValuesArray(typeField);
+
+  var getPriceFieldMinValues = function (arr) {
+    var values = [];
+    arr.forEach(function (item) {
+      values.push(window.data.types[item].minPrice);
+    });
+    return values;
+  };
+
+  var priceFieldValues = getPriceFieldMinValues(typeFieldValues);
+
   var onTimeInFieldChange = function () {
-    timeOutField.value = timeInField.value;
+    window.synchronizeFields(timeInField, timeOutField, timeInValues, timeOutValues, syncValues);
   };
 
   var onTimeOutFieldChange = function () {
-    timeInField.value = timeOutField.value;
+    window.synchronizeFields(timeOutField, timeInField, timeOutValues, timeInValues, syncValues);
   };
 
   var setPriceFieldMinValues = function () {
-    priceField.min = priceField.placeholder = window.data.types[typeField.value].minPrice;
+    window.synchronizeFields(typeField, priceField, typeFieldValues, priceFieldValues, syncValueWithMin);
+    priceField.placeholder = priceField.min;
   };
 
+  // установка значений в поле количество мест
   var setCapacityFieldValues = function () {
     if (capacityField.options.length > 0) {
       [].forEach.call(capacityField.options, function (item) {

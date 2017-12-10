@@ -1,9 +1,7 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
   var mapCard = document.querySelector('template').content.querySelector('.map__card');
-  var mapFiltersContainer = map.querySelector('.map__filters-container');
 
   // формирует список особенностей предложения для вывода в объявление
   var getFeaturesList = function (features) {
@@ -29,41 +27,7 @@
     return advert;
   };
 
-  // показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
-  var showAdvert = function (advert) {
-    removePopup();
-    var currentAdvert = createAdvert(advert);
-    map.insertBefore(currentAdvert, mapFiltersContainer);
-  };
-
-  // удаляет попап, если он есть
-  var removePopup = function () {
-    var popup = map.querySelector('.popup');
-    if (popup) {
-      map.removeChild(popup);
-    }
-  };
-
-  // функция закрытия попапа
-  var closePopup = function () {
-    removePopup();
-    window.pin.deactivate();
-    document.removeEventListener('keydown', onPopupEscPress);
-  };
-
-  // функция нажатия на кнопку Закрыть в попап
-  var onPopupCloseClick = function () {
-    closePopup();
-  };
-
-  // функция нажатия Esc при открытом попапе
-  var onPopupEscPress = function (evt) {
-    window.utils.isEscEvent(evt, closePopup);
-  };
-
   window.card = {
-    show: showAdvert,
-    closeClick: onPopupCloseClick,
-    escPress: onPopupEscPress
+    create: createAdvert
   };
 })();
