@@ -16,7 +16,7 @@ window.showCard = (function () {
   var closePopup = function () {
     removePopup();
     window.pin.deactivate();
-    document.removeEventListener('keydown', onPopupEscPress);
+    removePopupEvents();
   };
 
   // функция нажатия на кнопку Закрыть в попап
@@ -36,21 +36,33 @@ window.showCard = (function () {
     map.insertBefore(currentAdvert, mapFiltersContainer);
   };
 
+  var addPopupEvents = function () {
+    var popupClose = document.querySelector('.popup__close');
+    if (popupClose) {
+      popupClose.addEventListener('click', onPopupCloseClick);
+    }
+    document.addEventListener('keydown', onPopupEscPress);
+  };
+
+  var removePopupEvents = function () {
+    var popupClose = document.querySelector('.popup__close');
+    if (popupClose) {
+      popupClose.removeEventListener('click', onPopupCloseClick);
+    }
+
+    document.removeEventListener('keydown', onPopupEscPress);
+  };
+
   // функция обработки клика по карте
-  var onMapPinClick = function (evt) {
+  var onMapPinClick = function (evt, data) {
     var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
     if (
       targetPin && targetPin.classList.contains('map__pin') &&
       !targetPin.classList.contains('map__pin--main')
     ) {
-      showAdvert(window.data.offers[targetPin.tabIndex]);
+      showAdvert(data[targetPin.dataset.id]);
       window.pin.activate(targetPin);
-
-      var popup = document.querySelector('.popup');
-      var popupClose = popup.querySelector('.popup__close');
-      popupClose.addEventListener('click', onPopupCloseClick);
-
-      document.addEventListener('keydown', onPopupEscPress);
+      addPopupEvents();
     }
   };
 

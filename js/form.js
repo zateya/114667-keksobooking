@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = document.querySelectorAll('fieldset');
   var titleField = noticeForm.querySelector('#title');
@@ -12,7 +11,7 @@
   var priceField = noticeForm.querySelector('#price');
   var roomsField = noticeForm.querySelector('#room_number');
   var capacityField = noticeForm.querySelector('#capacity');
-  var submitButton = noticeForm.querySelector('.form__submit');
+  var formReset = noticeForm.querySelector('.form__reset');
 
   // переключение формы в неактивное/активное
   var toggleNoticeFormDisabled = function (isFormDisabled) {
@@ -121,6 +120,8 @@
     field.style.borderColor = '';
   };
 
+  /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
   getDefaultAddress();
   setPriceFieldMinValues();
   setCapacityFieldValues();
@@ -169,15 +170,29 @@
     timeOutField.addEventListener('change', onTimeOutFieldChange);
   }
 
+  if (formReset) {
+    formReset.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      noticeForm.reset();
+      getDefaultAddress();
+    });
+  }
+
+  /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
+  // отправка формы
+
   noticeForm.addEventListener('invalid', function (evt) {
     var invalidField = evt.target;
     invalidField.style.borderColor = 'red';
   }, true);
 
-  submitButton.addEventListener('click', function () {
-    if (noticeForm.checkValidity()) {
-      noticeForm.submit();
-    }
+  noticeForm.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(noticeForm), function () {
+      noticeForm.reset();
+      getDefaultAddress();
+    }, window.backend.isError);
+    evt.preventDefault();
   });
 
   window.form = {
