@@ -19,15 +19,25 @@
   };
 
   // создает метки на карте
-  var createPin = function (offerData, offerNumber) {
+  var createPin = function (offerData) {
     var newPin = mapPin.cloneNode(true);
-    var left = offerData.location.x - window.data.pinParams.rival.offsetX;
-    var top = offerData.location.y - window.data.pinParams.rival.offsetY;
+    var left = offerData.location.x - window.data.pinParams.offsetX;
+    var top = offerData.location.y - window.data.pinParams.offsetY;
     newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
     newPin.querySelector('img').src = offerData.author.avatar;
-    newPin.dataset.id = offerNumber;
     newPin.tabIndex = 0;
+
+    newPin.addEventListener('click', function (evt) {
+      handlePinClick(evt, offerData);
+    });
     return newPin;
+  };
+
+  // функция обработки клика по карте
+  var handlePinClick = function (evt, offer) {
+    var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
+    window.showCard.open(offer);
+    addCurrentPinActiveState(targetPin);
   };
 
   window.pin = {

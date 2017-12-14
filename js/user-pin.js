@@ -1,12 +1,24 @@
 'use strict';
 
 (function () {
+  var USER_PIN_ZINDEX = '2';
+  var USER_PIN_AREA = {
+    x: {
+      min: 0,
+      max: 1200
+    },
+    y: {
+      min: 100,
+      max: 500
+    }
+  };
+
   var userPin = document.querySelector('.map__pin--main');
 
   userPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    userPin.style.zIndex = '2';
+    userPin.style.zIndex = USER_PIN_ZINDEX;
 
     var startCoords = {
       x: evt.clientX,
@@ -31,18 +43,28 @@
         y: userPin.offsetTop - shift.y
       };
 
-      var yMin = window.data.userPinArea.y.min - window.data.pinParams.user.offsetY;
-      var yMax = window.data.userPinArea.y.max - window.data.pinParams.user.offsetY;
+      var yMin = USER_PIN_AREA.y.min - window.data.userPinParams.offsetY;
+      var yMax = USER_PIN_AREA.y.max - window.data.userPinParams.offsetY;
 
-      if (window.data.userPinArea.x.min < currentCoords.x && currentCoords.x < window.data.userPinArea.x.max) {
-        userPin.style.left = currentCoords.x + 'px';
+      var xMin = USER_PIN_AREA.x.min + window.data.userPinParams.width / 2;
+      var xMax = USER_PIN_AREA.x.max - window.data.userPinParams.width / 2;
+
+      if (currentCoords.x < xMin) {
+        currentCoords.x = xMin;
+      } else if (currentCoords.x > xMax) {
+        currentCoords.x = xMax;
       }
 
-      if (yMin < currentCoords.y && currentCoords.y < yMax) {
-        userPin.style.top = currentCoords.y + 'px';
+      if (currentCoords.y < yMin) {
+        currentCoords.y = yMin;
+      } else if (currentCoords.y > yMax) {
+        currentCoords.y = yMax;
       }
 
-      window.form.setAddressValue(currentCoords.x, currentCoords.y + window.data.pinParams.user.offsetY);
+      userPin.style.left = currentCoords.x + 'px';
+      userPin.style.top = currentCoords.y + 'px';
+
+      window.form.setAddressValue(currentCoords.x, currentCoords.y + window.data.userPinParams.offsetY);
     };
 
     var onPinMouseUp = function (upEvt) {

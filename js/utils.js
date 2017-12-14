@@ -4,6 +4,8 @@
   var ESC_KEYCODE = 27;
   var RUB_CURRENCY = '\u20BD';
 
+  var lastTimeout;
+
   // при нажатии клавиши Escape
   var isEscEvent = function (evt, action) {
     if (evt.keyCode === ESC_KEYCODE) {
@@ -21,10 +23,27 @@
     return randomElement;
   };
 
+  var getOptionsValuesArray = function (element) {
+    var values = [];
+    [].forEach.call(element.options, function (item) {
+      values.push(item.value);
+    });
+    return values;
+  };
+
+  var debounce = function (fun, timeInterval) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(fun, timeInterval);
+  };
+
   window.utils = {
     isEscEvent: isEscEvent,
+    rubCurrency: RUB_CURRENCY,
     getRandomInteger: getRandomInteger,
     getRandomArrayElement: getRandomArrayElement,
-    rubCurrency: RUB_CURRENCY
+    getOptionsValuesArray: getOptionsValuesArray,
+    debounce: debounce
   };
 })();
