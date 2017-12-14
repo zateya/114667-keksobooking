@@ -3,8 +3,8 @@
 (function () {
   var OFFERS__COUNT = 5;
   var PRICES_TO_COMPARE = {
-    min: 10000,
-    max: 50000
+    low: 10000,
+    high: 50000
   };
 
   var offers = [];
@@ -47,9 +47,9 @@
         filteredOffers = filteredOffers.filter(function (advert) {
 
           var priceFilterValues = {
-            'middle': advert.offer.price >= PRICES_TO_COMPARE.min && advert.offer.price < PRICES_TO_COMPARE.max,
-            'low': advert.offer.price < PRICES_TO_COMPARE.min,
-            'high': advert.offer.price >= PRICES_TO_COMPARE.max
+            'middle': advert.offer.price >= PRICES_TO_COMPARE.low && advert.offer.price < PRICES_TO_COMPARE.high,
+            'low': advert.offer.price < PRICES_TO_COMPARE.low,
+            'high': advert.offer.price >= PRICES_TO_COMPARE.high
           };
 
           return priceFilterValues[priceFilter.value];
