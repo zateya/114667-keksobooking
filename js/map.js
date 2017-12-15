@@ -92,9 +92,10 @@
   };
 
   var onUserPinMouseup = function () {
+    window.backend.load(onLoad, window.backend.isError);
     enableMap();
     window.form.isDisabled(false);
-    window.backend.load(onLoad, window.backend.isError);
+
     userPin.removeEventListener('mouseup', onUserPinMouseup);
   };
 
