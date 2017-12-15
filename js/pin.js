@@ -1,8 +1,11 @@
 'use strict';
 
 (function () {
+  var PINS__COUNT = 5;
+
   var mapPins = document.querySelector('.map__pins');
   var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
+  var pinsFragment = document.createDocumentFragment();
 
   // функция убирает активное состояние у метки
   var removePinActiveState = function () {
@@ -40,8 +43,16 @@
     addCurrentPinActiveState(targetPin);
   };
 
+  var createPins = function (adverts) {
+    var pinsCount = (adverts.length > PINS__COUNT) ? PINS__COUNT : adverts.length;
+    for (var i = 0; i < pinsCount; i++) {
+      pinsFragment.appendChild(createPin(adverts[i]));
+    }
+    mapPins.appendChild(pinsFragment);
+  };
+
   window.pin = {
-    create: createPin,
+    render: createPins,
     activate: addCurrentPinActiveState,
     deactivate: removePinActiveState
   };

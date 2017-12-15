@@ -1,17 +1,13 @@
 'use strict';
 
 (function () {
-  var OFFERS__COUNT = 5;
   var PRICES_TO_COMPARE = {
     low: 10000,
     high: 50000
   };
 
-  var offers = [];
-
   var map = document.querySelector('.map');
   var mapPins = map.querySelector('.map__pins');
-  var pinsFragment = document.createDocumentFragment();
   var userPin = map.querySelector('.map__pin--main');
 
   var filtersForm = document.querySelector('.map__filters');
@@ -20,6 +16,8 @@
   var roomsFilter = filtersForm.querySelector('#housing-rooms');
   var guestsFilter = filtersForm.querySelector('#housing-guests');
   var featuresFilters = filtersForm.querySelectorAll('#housing-features input[name="features"]');
+
+  var offers = [];
 
   var removePins = function () {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -76,7 +74,7 @@
     filterByPrice();
     filterByFeatures();
 
-    createPins(filteredOffers);
+    window.pin.render(filteredOffers);
   };
 
   filtersForm.addEventListener('change', function () {
@@ -88,18 +86,10 @@
     map.classList.remove('map--faded');
   };
 
-  var createPins = function (adverts) {
-    var offersCount = (adverts.length > OFFERS__COUNT) ? OFFERS__COUNT : adverts.length;
-    for (var i = 0; i < offersCount; i++) {
-      pinsFragment.appendChild(window.pin.create(adverts[i]));
-    }
-    mapPins.appendChild(pinsFragment);
-  };
-
   var onUserPinMouseup = function () {
     enableMap();
     window.form.isDisabled(false);
-    createPins(offers);
+    window.pin.render(offers);
 
     userPin.removeEventListener('mouseup', onUserPinMouseup);
   };
