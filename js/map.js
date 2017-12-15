@@ -81,7 +81,7 @@
     window.utils.debounce(updatePins, 500);
   });
 
-  // переключение карты в неактивное/активное состояние
+  // переключение карты в активное состояние
   var enableMap = function () {
     map.classList.remove('map--faded');
   };
