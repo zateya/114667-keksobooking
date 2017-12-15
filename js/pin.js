@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PINS_COUNT = 5;
+  var PINS_COUNT = 3;
 
   var mapPins = document.querySelector('.map__pins');
   var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
@@ -38,7 +38,7 @@
 
   // функция обработки клика по карте
   var handlePinClick = function (evt, offer) {
-    var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
+    var targetPin = evt.target.tagName === 'IMG' ? evt.target.parentElement : evt.target;
     window.showCard.open(offer);
     addCurrentPinActiveState(targetPin);
   };
