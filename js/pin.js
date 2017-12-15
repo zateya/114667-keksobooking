@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PINS__COUNT = 5;
+  var PINS_COUNT = 5;
 
   var mapPins = document.querySelector('.map__pins');
   var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
@@ -44,7 +44,7 @@
   };
 
   var createPins = function (data) {
-    var pinsCount = (data.length > PINS__COUNT) ? PINS__COUNT : data.length;
+    var pinsCount = (data.length > PINS_COUNT) ? PINS_COUNT : data.length;
     for (var i = 0; i < pinsCount; i++) {
       pinsFragment.appendChild(createPin(data[i]));
     }
