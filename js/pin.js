@@ -43,10 +43,10 @@
     addCurrentPinActiveState(targetPin);
   };
 
-  var createPins = function (data) {
-    var pinsCount = (data.length > PINS_COUNT) ? PINS_COUNT : data.length;
+  var createPins = function (offers) {
+    var pinsCount = (offers.length > PINS_COUNT) ? PINS_COUNT : offers.length;
     for (var i = 0; i < pinsCount; i++) {
-      pinsFragment.appendChild(createPin(data[i]));
+      pinsFragment.appendChild(createPin(offers[i]));
     }
     mapPins.appendChild(pinsFragment);
   };
