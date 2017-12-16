@@ -1,6 +1,6 @@
 'use strict';
 
-window.showCard = (function () {
+(function () {
   var map = document.querySelector('.map');
   var mapFiltersContainer = map.querySelector('.map__filters-container');
 
@@ -29,13 +29,6 @@ window.showCard = (function () {
     window.utils.isEscEvent(evt, closePopup);
   };
 
-  // показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
-  var showAdvert = function (advert) {
-    removePopup();
-    var currentAdvert = window.card.create(advert);
-    map.insertBefore(currentAdvert, mapFiltersContainer);
-  };
-
   var addPopupEvents = function () {
     var popupClose = document.querySelector('.popup__close');
     if (popupClose) {
@@ -53,18 +46,14 @@ window.showCard = (function () {
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
-  // функция обработки клика по карте
-  var onMapPinClick = function (evt, data) {
-    var targetPin = evt.target.closest('.map__pin'); // берем ближайший с классом, т.к. внутри картинка, забирающая фокус при клике
-    if (
-      targetPin && targetPin.classList.contains('map__pin') &&
-      !targetPin.classList.contains('map__pin--main')
-    ) {
-      showAdvert(data[targetPin.dataset.id]);
-      window.pin.activate(targetPin);
+  // показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
+  window.showCard = {
+    open: function (advert) {
+      removePopup();
+      var currentAdvert = window.card.create(advert);
+      map.insertBefore(currentAdvert, mapFiltersContainer);
       addPopupEvents();
-    }
+    },
+    close: closePopup
   };
-
-  return onMapPinClick;
 })();

@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var USERS_COUNT = 3;
-
   var TYPES = {
     flat: {
       ru: 'Квартира',
@@ -29,37 +27,20 @@
     '100': ['0']
   };
 
-  var USER_PIN_AREA = {
-    x: {
-      min: 300,
-      max: 900
-    },
-    y: {
-      min: 160,
-      max: 680
-    }
+  var PIN_PARAMS = {
+    offsetX: 5, // смещение X координаты центра метки относительно left позиции маркера
+    offsetY: 39 // смещение Y координаты нижнего края метки относительно top позиции маркера
   };
 
-  var PIN_PARAMS = {
-    user: {
-      width: 65,
-      height: 82,
-      offsetX: 0,
-      offsetY: 48
-    },
-    rival: {
-      width: 46,
-      height: 62,
-      offsetX: 5,
-      offsetY: 39
-    }
+  var USER_PIN_PARAMS = {
+    width: 65,
+    offsetY: 48 // смещение Y координаты нижнего края метки относительно top позиции маркера
   };
 
   window.data = {
-    usersCount: USERS_COUNT,
+    pinParams: PIN_PARAMS,
+    userPinParams: USER_PIN_PARAMS,
     types: TYPES,
-    roomsCapacity: ROOMS_CAPACITY,
-    userPinArea: USER_PIN_AREA,
-    pinParams: PIN_PARAMS
+    roomsCapacity: ROOMS_CAPACITY
   };
 })();

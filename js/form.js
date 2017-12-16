@@ -13,7 +13,7 @@
   var capacityField = noticeForm.querySelector('#capacity');
   var formReset = noticeForm.querySelector('.form__reset');
 
-  // переключение формы в неактивное/активное
+  // переключение формы в неактивное/активное состояние
   var toggleNoticeFormDisabled = function (isFormDisabled) {
     noticeForm.classList.toggle('notice__form--disabled', isFormDisabled);
     for (var i = 0; i < noticeFormFieldsets.length; i++) {
@@ -22,7 +22,7 @@
   };
 
   var setAddressFieldValue = function (x, y) {
-    addressField.value = 'x: ' + x + ', y: ' + y;
+    addressField.value = 'x: ' + parseInt(x, 10) + ', y: ' + parseInt(y, 10);
   };
 
   // получение адреса по-умолчанию
@@ -30,7 +30,7 @@
     var pin = document.querySelector('.map__pin--main');
     if (pin) {
       var x = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
-      var y = parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10) + window.data.pinParams.user.offsetY;
+      var y = parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10) + window.data.userPinParams.offsetY;
       setAddressFieldValue(x, y);
     }
   };
@@ -71,17 +71,9 @@
     element.min = value;
   };
 
-  var getOptionsValuesArray = function (element) {
-    var values = [];
-    [].forEach.call(element.options, function (item) {
-      values.push(item.value);
-    });
-    return values;
-  };
-
-  var timeInValues = getOptionsValuesArray(timeInField);
-  var timeOutValues = getOptionsValuesArray(timeOutField);
-  var typeFieldValues = getOptionsValuesArray(typeField);
+  var timeInValues = window.utils.getOptionsValuesArray(timeInField);
+  var timeOutValues = window.utils.getOptionsValuesArray(timeOutField);
+  var typeFieldValues = window.utils.getOptionsValuesArray(typeField);
 
   var getPriceFieldMinValues = function (arr) {
     var values = [];
