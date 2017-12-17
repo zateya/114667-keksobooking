@@ -1,10 +1,35 @@
 'use strict';
 
 (function () {
+  var roomsToCapacity = {
+    '1': ['1'],
+    '2': ['2', '1'],
+    '3': ['3', '2', '1'],
+    '100': ['0']
+  };
+
+  var TYPES = {
+    flat: {
+      ru: 'Квартира',
+      minPrice: 1000
+    },
+    bungalo: {
+      ru: 'Бунгало',
+      minPrice: 0
+    },
+    house: {
+      ru: 'Дом',
+      minPrice: 5000
+    },
+    palace: {
+      ru: 'Дворец',
+      minPrice: 10000
+    }
+  };
+
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = document.querySelectorAll('fieldset');
   var titleField = noticeForm.querySelector('#title');
-  var addressField = noticeForm.querySelector('#address');
   var timeInField = noticeForm.querySelector('#timein');
   var timeOutField = noticeForm.querySelector('#timeout');
   var typeField = noticeForm.querySelector('#type');
@@ -18,20 +43,6 @@
     noticeForm.classList.toggle('notice__form--disabled', isFormDisabled);
     for (var i = 0; i < noticeFormFieldsets.length; i++) {
       noticeFormFieldsets[i].disabled = isFormDisabled;
-    }
-  };
-
-  var setAddressFieldValue = function (x, y) {
-    addressField.value = 'x: ' + parseInt(x, 10) + ', y: ' + parseInt(y, 10);
-  };
-
-  // получение адреса по-умолчанию
-  var getDefaultAddress = function () {
-    var pin = document.querySelector('.map__pin--main');
-    if (pin) {
-      var x = window.getComputedStyle(pin, null).getPropertyValue('left').slice(0, -2);
-      var y = parseInt(window.getComputedStyle(pin, null).getPropertyValue('top').slice(0, -2), 10) + window.data.userPinParams.offsetY;
-      setAddressFieldValue(x, y);
     }
   };
 
@@ -61,16 +72,7 @@
     }
   };
 
-  // синхронизация полей
-
-  var syncValues = function (element, value) {
-    element.value = value;
-  };
-
-  var syncValueWithMin = function (element, value) {
-    element.min = value;
-  };
-
+  // получение массива значений в селектах
   var timeInValues = window.utils.getOptionsValuesArray(timeInField);
   var timeOutValues = window.utils.getOptionsValuesArray(timeOutField);
   var typeFieldValues = window.utils.getOptionsValuesArray(typeField);
@@ -78,23 +80,24 @@
   var getPriceFieldMinValues = function (arr) {
     var values = [];
     arr.forEach(function (item) {
-      values.push(window.data.types[item].minPrice);
+      values.push(TYPES[item].minPrice);
     });
     return values;
   };
 
   var priceFieldValues = getPriceFieldMinValues(typeFieldValues);
 
+  // синхронизация полей
   var onTimeInFieldChange = function () {
-    window.synchronizeFields(timeInField, timeOutField, timeInValues, timeOutValues, syncValues);
+    window.synchronizeFields(timeInField, timeOutField, timeInValues, timeOutValues, window.utils.syncValues);
   };
 
   var onTimeOutFieldChange = function () {
-    window.synchronizeFields(timeOutField, timeInField, timeOutValues, timeInValues, syncValues);
+    window.synchronizeFields(timeOutField, timeInField, timeOutValues, timeInValues, window.utils.syncValues);
   };
 
   var setPriceFieldMinValues = function () {
-    window.synchronizeFields(typeField, priceField, typeFieldValues, priceFieldValues, syncValueWithMin);
+    window.synchronizeFields(typeField, priceField, typeFieldValues, priceFieldValues, window.utils.syncValueWithMin);
     priceField.placeholder = priceField.min;
   };
 
@@ -102,8 +105,8 @@
   var setCapacityFieldValues = function () {
     if (capacityField.options.length > 0) {
       [].forEach.call(capacityField.options, function (item) {
-        item.selected = (window.data.roomsCapacity[roomsField.value][0] === item.value) ? true : false;
-        item.hidden = (window.data.roomsCapacity[roomsField.value].indexOf(item.value) >= 0) ? false : true;
+        item.selected = (roomsToCapacity[roomsField.value][0] === item.value) ? true : false;
+        item.hidden = (roomsToCapacity[roomsField.value].indexOf(item.value) >= 0) ? false : true;
       });
     }
   };
@@ -114,7 +117,7 @@
 
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-  getDefaultAddress();
+  window.userPin.getDefaultAddress();
   setPriceFieldMinValues();
   setCapacityFieldValues();
 
@@ -166,7 +169,7 @@
     formReset.addEventListener('click', function (evt) {
       evt.preventDefault();
       noticeForm.reset();
-      getDefaultAddress();
+      window.userPin.getDefaultAddress();
     });
   }
 
@@ -182,13 +185,14 @@
   noticeForm.addEventListener('submit', function (evt) {
     window.backend.save(new FormData(noticeForm), function () {
       noticeForm.reset();
-      getDefaultAddress();
+      resetInvalidFieldStyle(titleField);
+      window.userPin.getDefaultAddress();
     }, window.backend.isError);
     evt.preventDefault();
   });
 
   window.form = {
     isDisabled: toggleNoticeFormDisabled,
-    setAddressValue: setAddressFieldValue
+    types: TYPES
   };
 })();
