@@ -1,28 +1,29 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
   var RUB_CURRENCY = '\u20BD';
+  var KeyboardKey = {
+    ESC: 27,
+    ENTER: 13
+  };
 
   var lastTimeout;
 
-  // при нажатии клавиши Escape
+  // выполняем переданную функцию action если нажата клавиша Escape
   var isEscEvent = function (evt, action) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === KeyboardKey.ESC) {
       action();
     }
   };
 
-  // функции для работы с массивами
-  var getRandomInteger = function (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  // выполняем переданную функцию action если нажата клавиша Enter
+  var isEnterEvent = function (evt, action) {
+    if (evt.keyCode === KeyboardKey.ENTER) {
+      action();
+    }
   };
 
-  var getRandomArrayElement = function (arr) {
-    var randomElement = arr[getRandomInteger(0, arr.length - 1)];
-    return randomElement;
-  };
-
+  // получение массива значений в селекте
   var getOptionsValuesArray = function (element) {
     var values = [];
     [].forEach.call(element.options, function (item) {
@@ -31,19 +32,47 @@
     return values;
   };
 
-  var debounce = function (fun, timeInterval) {
+  // устанавливает переданному элементу переданное значение
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+
+  // устанавливает минимальное значение переданного элемента равное переданному значению
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
+  };
+
+  // выполняет переданную функцию action через заданный интервал timeInterval
+  var debounce = function (action, timeInterval) {
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
-    lastTimeout = window.setTimeout(fun, timeInterval);
+    lastTimeout = window.setTimeout(action, timeInterval);
+  };
+
+  var getDecline = function (num, nominative, genitiveSingular, genitivePlural) {
+    var numStr = '' + num;
+    var digit = numStr.charAt(numStr.length - 2) !== '1' ? parseInt(numStr.slice(-1), 10) : 0;
+    var decline = genitivePlural;
+
+    var digitToDecline = {
+      1: nominative,
+      2: genitiveSingular,
+      3: genitiveSingular,
+      4: genitiveSingular
+    };
+
+    return digitToDecline[digit] || decline;
   };
 
   window.utils = {
     isEscEvent: isEscEvent,
+    isEnterEvent: isEnterEvent,
     rubCurrency: RUB_CURRENCY,
-    getRandomInteger: getRandomInteger,
-    getRandomArrayElement: getRandomArrayElement,
     getOptionsValuesArray: getOptionsValuesArray,
-    debounce: debounce
+    syncValues: syncValues,
+    syncValueWithMin: syncValueWithMin,
+    debounce: debounce,
+    getDecline: getDecline
   };
 })();

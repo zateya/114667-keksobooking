@@ -29,6 +29,7 @@
     window.utils.isEscEvent(evt, closePopup);
   };
 
+  // добавляет обработчики нажатия на кнопку Закрыть и клавишу Esc
   var addPopupEvents = function () {
     var popupClose = document.querySelector('.popup__close');
     if (popupClose) {
@@ -37,6 +38,7 @@
     document.addEventListener('keydown', onPopupEscPress);
   };
 
+  // удаляет обработчики нажатия на кнопку Закрыть и клавишу Esc
   var removePopupEvents = function () {
     var popupClose = document.querySelector('.popup__close');
     if (popupClose) {
@@ -46,7 +48,6 @@
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
-  // показывает объявление: если уже есть попап, то сначала удаляем, а затем создаем новый
   window.showCard = {
     open: function (advert) {
       removePopup();
