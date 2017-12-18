@@ -88,7 +88,7 @@
       userPin.style.left = currentCoords.x + 'px';
       userPin.style.top = currentCoords.y + 'px';
 
-      // вывод текущих координт метки в поле Адреса
+      // вывод текущих координат метки в поле Адреса
       setAddressFieldValue(currentCoords.x, currentCoords.y + UserPinParam.OFFSET_Y);
     };
 
