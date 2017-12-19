@@ -50,16 +50,17 @@
     lastTimeout = window.setTimeout(action, timeInterval);
   };
 
-  var getDecline = function (num, nominative, genitiveSingular, genitivePlural) {
-    var numStr = '' + num;
-    var digit = numStr.charAt(numStr.length - 2) !== '1' ? parseInt(numStr.slice(-1), 10) : 0;
-    var decline = genitivePlural;
+  // получение для чисел существительных с правильным окончанием
+  var getDecline = function (num, oneSubject, twoSubjects, manySubjects) {
+    var numString = '' + num;
+    var digit = numString.charAt(numString.length - 2) !== '1' ? parseInt(numString.slice(-1), 10) : 0;
+    var decline = manySubjects;
 
     var digitToDecline = {
-      1: nominative,
-      2: genitiveSingular,
-      3: genitiveSingular,
-      4: genitiveSingular
+      1: oneSubject,
+      2: twoSubjects,
+      3: twoSubjects,
+      4: twoSubjects
     };
 
     return digitToDecline[digit] || decline;

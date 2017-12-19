@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PINS_COUNT = 3;
+  var PINS_COUNT = 5;
 
   var PinParam = {
     OFFSET_X: 5, // смещение X координаты центра метки относительно left позиции маркера
@@ -50,10 +50,10 @@
 
   // отрисовывает метки на карте
   var createPins = function (offers) {
-    var pinsCount = (offers.length > PINS_COUNT) ? PINS_COUNT : offers.length;
-    for (var i = 0; i < pinsCount; i++) {
-      pinsFragment.appendChild(createPin(offers[i]));
-    }
+    var selectedOffers = offers.slice(0, PINS_COUNT);
+    selectedOffers.forEach(function (item) {
+      pinsFragment.appendChild(createPin(item));
+    });
     mapPins.appendChild(pinsFragment);
   };
 

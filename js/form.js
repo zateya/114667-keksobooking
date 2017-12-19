@@ -41,9 +41,9 @@
   // переключение формы в неактивное/активное состояние
   var toggleNoticeFormDisabled = function (isFormDisabled) {
     noticeForm.classList.toggle('notice__form--disabled', isFormDisabled);
-    for (var i = 0; i < noticeFormFieldsets.length; i++) {
-      noticeFormFieldsets[i].disabled = isFormDisabled;
-    }
+    [].forEach.call(noticeFormFieldsets, function (item) {
+      item.disabled = isFormDisabled;
+    });
   };
 
   // Валидация текста в поле Заголовок
@@ -78,11 +78,9 @@
   var typeFieldValues = window.utils.getOptionsValuesArray(typeField);
 
   var getPriceFieldMinValues = function (arr) {
-    var values = [];
-    arr.forEach(function (item) {
-      values.push(TYPES[item].minPrice);
+    return arr.map(function (item) {
+      return TYPES[item].minPrice;
     });
-    return values;
   };
 
   var priceFieldValues = getPriceFieldMinValues(typeFieldValues);
@@ -113,6 +111,19 @@
 
   var resetInvalidFieldStyle = function (field) {
     field.style.borderColor = '';
+  };
+
+  var resetForm = function () {
+    var requiredFields = noticeForm.querySelectorAll('input[required]');
+
+    noticeForm.reset();
+    window.userPin.getDefaultAddress();
+    setPriceFieldMinValues();
+    setCapacityFieldValues();
+
+    [].forEach.call(requiredFields, function (item) {
+      resetInvalidFieldStyle(item);
+    });
   };
 
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -168,8 +179,7 @@
   if (formReset) {
     formReset.addEventListener('click', function (evt) {
       evt.preventDefault();
-      noticeForm.reset();
-      window.userPin.getDefaultAddress();
+      resetForm();
     });
   }
 
@@ -183,11 +193,7 @@
   }, true);
 
   noticeForm.addEventListener('submit', function (evt) {
-    window.backend.save(new FormData(noticeForm), function () {
-      noticeForm.reset();
-      resetInvalidFieldStyle(titleField);
-      window.userPin.getDefaultAddress();
-    }, window.backend.isError);
+    window.backend.save(new FormData(noticeForm), resetForm, window.backend.isError);
     evt.preventDefault();
   });
 
