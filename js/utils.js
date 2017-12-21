@@ -66,6 +66,44 @@
     return digitToDecline[digit] || decline;
   };
 
+  // удаление дочерних элементов
+  var removeChildNodes = function (element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  };
+
+  // получение родительского элемента с дочерними элементами, переданными в функции cb
+  var getListElement = function (element, arr, cb) {
+    removeChildNodes(element);
+    if (typeof cb === 'function') {
+      var itemsString = arr.map(function (item) {
+        return cb(item);
+      }).join('');
+      element.insertAdjacentHTML('afterbegin', itemsString);
+    }
+  };
+
+  // загрузка файлов
+  var loadFile = function (file, filetypes, cb) {
+    if (file) {
+      var fileName = file.name.toLowerCase();
+
+      var matches = filetypes.some(function (item) {
+        return fileName.endsWith(item);
+      });
+
+      if (matches && typeof cb === 'function') {
+        var reader = new FileReader();
+
+        reader.addEventListener('load', function () {
+          cb(reader);
+        });
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   window.utils = {
     isEscEvent: isEscEvent,
     isEnterEvent: isEnterEvent,
@@ -74,6 +112,9 @@
     syncValues: syncValues,
     syncValueWithMin: syncValueWithMin,
     debounce: debounce,
-    getDecline: getDecline
+    getDecline: getDecline,
+    removeChildNodes: removeChildNodes,
+    getListElement: getListElement,
+    loadFile: loadFile
   };
 })();

@@ -37,6 +37,9 @@
   var roomsField = noticeForm.querySelector('#room_number');
   var capacityField = noticeForm.querySelector('#capacity');
   var formReset = noticeForm.querySelector('.form__reset');
+  var avatarPreview = document.querySelector('.notice__preview  img');
+
+  var defaultAvatarIcon = avatarPreview.src;
 
   // переключение формы в неактивное/активное состояние
   var toggleNoticeFormDisabled = function (isFormDisabled) {
@@ -113,6 +116,16 @@
     field.style.borderColor = '';
   };
 
+  var removeUploads = function () {
+    var photos = document.querySelectorAll('.form__photo');
+
+    if (photos) {
+      [].forEach.call(photos, function (photo) {
+        photo.parentNode.removeChild(photo);
+      });
+    }
+  };
+
   var resetForm = function () {
     var requiredFields = noticeForm.querySelectorAll('input[required]');
 
@@ -120,6 +133,8 @@
     window.userPin.getDefaultAddress();
     setPriceFieldMinValues();
     setCapacityFieldValues();
+    removeUploads();
+    avatarPreview.src = defaultAvatarIcon;
 
     [].forEach.call(requiredFields, function (item) {
       resetInvalidFieldStyle(item);
