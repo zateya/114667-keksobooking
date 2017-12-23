@@ -4,17 +4,18 @@
   var PINS_COUNT = 5;
 
   var PinParam = {
-    OFFSET_X: 5, // смещение X координаты центра метки относительно left позиции маркера
-    OFFSET_Y: 40 // смещение Y координаты нижнего края метки относительно top позиции маркера
+    HEIGHT: 44,
+    ARROW_WIDTH: 10,
+    ARROW_HEIGHT: 18
   };
 
-  // размер map__pin 40*44px,
-  // за счет transform: translate(-50%, -50%) он смещается на 20px влево по x и 22px вверх по y
-  // указатель - псевлоэлемент 10*18px с абсолютным позиционированием top 100% (или 44 пикселя)
-  // и смещением left на 50%, т.е. на 20 пикселей.
+  // размер map__pin в разметке 40*44px,
+  // за счет transform: translate(-50%, -50%) метка смещается на 20px влево по x и 22px вверх по y
+  // стрелка-указатель внутри метки - псевлоэлемент 10*18px
+  // с абсолютным позиционированием top 100% (или 44 пикселя) и смещением left на 50%, т.е. на 20 пикселей.
   // Ширина указателя 10, центр - 5. Итого центр указателя смещен вправо от левого края map__pin на 25px.
-  // Чтобы указатель показывал на координату надо сместить map__pin влево еще на 5 (OFFSET_X) (на 20 уже смещается транслейтом).
-  // высота пина с указателем: 44 + 18 = 62, надо сместить 62 - 22 = 40 (OFFSET_Y) (на 22 уже смещается транслейтом).
+  // Чтобы указатель показывал на координату надо сместить map__pin влево еще на 5 (смещение по Х), на 20 уже смещается транслейтом.
+  // высота метки с указателем: 44 + 18 = 62, надо сместить на: 62 - 22 = 40 (смещение по Y), на 22 уже смещается транслейтом.
 
   var mapPins = document.querySelector('.map__pins');
   var mapPin = document.querySelector('template').content.querySelector('button.map__pin');
@@ -24,8 +25,8 @@
   // создает метку для карты
   var createPin = function (offerData) {
     var newPin = mapPin.cloneNode(true);
-    var left = offerData.location.x - PinParam.OFFSET_X;
-    var top = offerData.location.y - PinParam.OFFSET_Y;
+    var left = offerData.location.x - PinParam.ARROW_WIDTH / 2; // (ширина метки / 2 - ширина метки / 2) - сокращаются.
+    var top = offerData.location.y - (PinParam.HEIGHT / 2 + PinParam.ARROW_HEIGHT);
     newPin.style = 'left:' + left + 'px;' + 'top:' + top + 'px';
     newPin.querySelector('img').src = offerData.author.avatar;
     newPin.tabIndex = 0;
